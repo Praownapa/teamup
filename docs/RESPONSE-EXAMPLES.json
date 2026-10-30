@@ -1,0 +1,2378 @@
+{
+  "getMe": {
+    "status": "active",
+    "role": "admin",
+    "email": "6600123456@student.uni.ac.th",
+    "student_id": "6600123456",
+    "id": 1,
+    "name": "John Carter",
+    "major": "Digital Engineering",
+    "year": 3,
+    "bio": "UI/UX-focused developer who loves turning messy requirements into clean interfaces.",
+    "portfolio": "github.com/johncarter",
+    "open_to_projects": true,
+    "skills": [
+      {
+        "name": "React",
+        "level": "Advanced"
+      },
+      {
+        "name": "UI/UX Design",
+        "level": "Advanced"
+      },
+      {
+        "name": "Figma",
+        "level": "Advanced"
+      },
+      {
+        "name": "JavaScript",
+        "level": "Intermediate"
+      },
+      {
+        "name": "Python",
+        "level": "Intermediate"
+      },
+      {
+        "name": "SQL",
+        "level": "Beginner"
+      }
+    ],
+    "interests": [
+      "Web Development",
+      "Sustainability",
+      "EdTech"
+    ],
+    "notify": {
+      "invitations": true,
+      "requests": true,
+      "team": false,
+      "digest": true
+    },
+    "teams": [
+      {
+        "id": 1,
+        "title": "Campus Food Waste Tracker",
+        "is_owner": true,
+        "status": "recruiting"
+      },
+      {
+        "id": 2,
+        "title": "AI Study Buddy Chatbot",
+        "is_owner": false,
+        "status": "recruiting"
+      }
+    ],
+    "stats": {
+      "teams": 2,
+      "projects": 1,
+      "skills": 6
+    }
+  },
+  "getCounts": {
+    "pending_requests": 3,
+    "unread_notifications": 3
+  },
+  "getDashboard": {
+    "stats": {
+      "teams": 2,
+      "pending": 2,
+      "invitations": 1,
+      "matches": 3,
+      "unread": 3
+    },
+    "recommended": [
+      {
+        "id": 3,
+        "title": "Smart Parking IoT System",
+        "category": "Senior Project",
+        "description": "Sensor network that shows free parking spots around campus in real time via a mobile web app.",
+        "cover_url": "",
+        "owner": {
+          "id": 7,
+          "name": "Ethan Johnson",
+          "major": "Information Technology",
+          "year": 2
+        },
+        "max_size": 5,
+        "accepting": true,
+        "status": "recruiting",
+        "created_at": "2026-10-15T18:16:28.165Z",
+        "duration": "Full academic year",
+        "meeting": "Lab, Tue & Thu",
+        "deadline": "2026-12-15",
+        "saved": false,
+        "skills": [
+          [
+            "Python",
+            true
+          ],
+          [
+            "IoT",
+            false
+          ],
+          [
+            "AWS",
+            false
+          ],
+          [
+            "SQL",
+            true
+          ]
+        ],
+        "match": 50,
+        "roles": [
+          {
+            "name": "IoT Engineer",
+            "user": {
+              "id": 7,
+              "name": "Ethan Johnson",
+              "major": "Information Technology",
+              "year": 2
+            }
+          },
+          {
+            "name": "Backend Developer",
+            "user": {
+              "id": 8,
+              "name": "Liam Garcia",
+              "major": "Computer Engineering",
+              "year": 4
+            }
+          },
+          {
+            "name": "Data Analyst",
+            "user": {
+              "id": 9,
+              "name": "Ava Thompson",
+              "major": "Digital Engineering",
+              "year": 2
+            }
+          },
+          {
+            "name": "Hardware",
+            "user": {
+              "id": 10,
+              "name": "Noah Davis",
+              "major": "Industrial Engineering",
+              "year": 3
+            }
+          },
+          {
+            "name": "Cloud Engineer",
+            "user": null
+          }
+        ],
+        "members": [
+          {
+            "id": 7,
+            "name": "Ethan Johnson",
+            "major": "Information Technology",
+            "year": 2,
+            "role": "IoT Engineer",
+            "owner": true,
+            "skills": [
+              "React",
+              "Node.js",
+              "SQL"
+            ]
+          },
+          {
+            "id": 8,
+            "name": "Liam Garcia",
+            "major": "Computer Engineering",
+            "year": 4,
+            "role": "Backend Developer",
+            "owner": false,
+            "skills": [
+              "UI/UX Design",
+              "Flutter",
+              "Python"
+            ]
+          },
+          {
+            "id": 9,
+            "name": "Ava Thompson",
+            "major": "Digital Engineering",
+            "year": 2,
+            "role": "Data Analyst",
+            "owner": false,
+            "skills": [
+              "JavaScript",
+              "Vue.js",
+              "CSS"
+            ]
+          },
+          {
+            "id": 10,
+            "name": "Noah Davis",
+            "major": "Industrial Engineering",
+            "year": 3,
+            "role": "Hardware",
+            "owner": false,
+            "skills": [
+              "UI/UX Design",
+              "Research"
+            ]
+          }
+        ],
+        "open_roles": [
+          "Cloud Engineer"
+        ],
+        "my_role": null,
+        "my_request": null,
+        "pending_requests": 0,
+        "pending_invitations": 0
+      },
+      {
+        "id": 4,
+        "title": "City Air Quality Viz",
+        "category": "Research",
+        "description": "Interactive map visualizing PM2.5 history and forecasts for city districts using open data.",
+        "cover_url": "",
+        "owner": {
+          "id": 11,
+          "name": "Grace Hall",
+          "major": "Data Science",
+          "year": 3
+        },
+        "max_size": 3,
+        "accepting": true,
+        "status": "recruiting",
+        "created_at": "2026-10-26T18:16:28.165Z",
+        "duration": "8 weeks",
+        "meeting": "Online, flexible",
+        "deadline": "2026-11-20",
+        "saved": false,
+        "skills": [
+          [
+            "Python",
+            true
+          ],
+          [
+            "Pandas",
+            false
+          ],
+          [
+            "D3.js",
+            false
+          ],
+          [
+            "JavaScript",
+            true
+          ]
+        ],
+        "match": 50,
+        "roles": [
+          {
+            "name": "Data Scientist",
+            "user": {
+              "id": 11,
+              "name": "Grace Hall",
+              "major": "Data Science",
+              "year": 3
+            }
+          },
+          {
+            "name": "Frontend Developer",
+            "user": {
+              "id": 12,
+              "name": "Ryan King",
+              "major": "Computer Engineering",
+              "year": 2
+            }
+          },
+          {
+            "name": "Data Analyst",
+            "user": null
+          }
+        ],
+        "members": [
+          {
+            "id": 11,
+            "name": "Grace Hall",
+            "major": "Data Science",
+            "year": 3,
+            "role": "Data Scientist",
+            "owner": true,
+            "skills": [
+              "Python",
+              "Pandas",
+              "D3.js"
+            ]
+          },
+          {
+            "id": 12,
+            "name": "Ryan King",
+            "major": "Computer Engineering",
+            "year": 2,
+            "role": "Frontend Developer",
+            "owner": false,
+            "skills": [
+              "JavaScript",
+              "React"
+            ]
+          }
+        ],
+        "open_roles": [
+          "Data Analyst"
+        ],
+        "my_role": null,
+        "my_request": null,
+        "pending_requests": 0,
+        "pending_invitations": 0
+      }
+    ],
+    "my_teams": [
+      {
+        "id": 1,
+        "title": "Campus Food Waste Tracker",
+        "category": "Course Project",
+        "course": "DES424 Cloud-based App Dev",
+        "description": "Canteens on campus throw away a surprising amount of food every day, but nobody measures it. We’re building a web app where canteen staff log leftovers in under 30 seconds and everyone sees weekly dashboards. Goal: cut food waste by 20% this semester.",
+        "cover_url": "",
+        "owner": {
+          "id": 1,
+          "name": "John Carter",
+          "major": "Digital Engineering",
+          "year": 3
+        },
+        "max_size": 5,
+        "accepting": true,
+        "status": "recruiting",
+        "created_at": "2026-10-03T18:16:28.165Z",
+        "duration": "Aug – Dec 2026",
+        "meeting": "On campus, 2× / week",
+        "deadline": "2026-11-30",
+        "saved": false,
+        "skills": [
+          [
+            "React",
+            true
+          ],
+          [
+            "FastAPI",
+            false
+          ],
+          [
+            "PostgreSQL",
+            false
+          ],
+          [
+            "AWS",
+            false
+          ]
+        ],
+        "match": 25,
+        "roles": [
+          {
+            "name": "UI/UX Designer",
+            "user": {
+              "id": 1,
+              "name": "John Carter",
+              "major": "Digital Engineering",
+              "year": 3
+            }
+          },
+          {
+            "name": "Backend Developer",
+            "user": {
+              "id": 2,
+              "name": "Emma Wilson",
+              "major": "Computer Engineering",
+              "year": 3
+            }
+          },
+          {
+            "name": "Data & QA",
+            "user": {
+              "id": 3,
+              "name": "Lucas Brown",
+              "major": "Digital Engineering",
+              "year": 2
+            }
+          },
+          {
+            "name": "Cloud Engineer",
+            "user": {
+              "id": 4,
+              "name": "Daniel Ortiz",
+              "major": "Computer Engineering",
+              "year": 4
+            }
+          },
+          {
+            "name": "Frontend Developer",
+            "user": null
+          }
+        ],
+        "members": [
+          {
+            "id": 1,
+            "name": "John Carter",
+            "major": "Digital Engineering",
+            "year": 3,
+            "role": "UI/UX Designer",
+            "owner": true,
+            "skills": [
+              "React",
+              "UI/UX Design",
+              "Figma",
+              "JavaScript",
+              "Python",
+              "SQL"
+            ]
+          },
+          {
+            "id": 2,
+            "name": "Emma Wilson",
+            "major": "Computer Engineering",
+            "year": 3,
+            "role": "Backend Developer",
+            "owner": false,
+            "skills": [
+              "FastAPI",
+              "PostgreSQL",
+              "Python"
+            ]
+          },
+          {
+            "id": 3,
+            "name": "Lucas Brown",
+            "major": "Digital Engineering",
+            "year": 2,
+            "role": "Data & QA",
+            "owner": false,
+            "skills": [
+              "SQL",
+              "Pytest",
+              "Python"
+            ]
+          },
+          {
+            "id": 4,
+            "name": "Daniel Ortiz",
+            "major": "Computer Engineering",
+            "year": 4,
+            "role": "Cloud Engineer",
+            "owner": false,
+            "skills": [
+              "AWS",
+              "Docker",
+              "Linux"
+            ]
+          }
+        ],
+        "open_roles": [
+          "Frontend Developer"
+        ],
+        "my_role": "owner",
+        "my_request": null,
+        "pending_requests": 2,
+        "pending_invitations": 1
+      },
+      {
+        "id": 2,
+        "title": "AI Study Buddy Chatbot",
+        "category": "Competition",
+        "course": "National AI Hackathon",
+        "description": "An LLM-powered chatbot that turns lecture slides into quizzes and flashcards for exam revision.",
+        "cover_url": "",
+        "owner": {
+          "id": 5,
+          "name": "Oliver Smith",
+          "major": "Computer Engineering",
+          "year": 3
+        },
+        "max_size": 4,
+        "accepting": true,
+        "status": "recruiting",
+        "created_at": "2026-10-20T18:16:28.165Z",
+        "duration": "Oct – Nov 2026",
+        "meeting": "Online, weekends",
+        "deadline": "2026-11-10",
+        "saved": true,
+        "skills": [
+          [
+            "Python",
+            true
+          ],
+          [
+            "NLP",
+            false
+          ],
+          [
+            "React",
+            true
+          ],
+          [
+            "UI/UX Design",
+            true
+          ]
+        ],
+        "match": 75,
+        "roles": [
+          {
+            "name": "ML Engineer",
+            "user": {
+              "id": 5,
+              "name": "Oliver Smith",
+              "major": "Computer Engineering",
+              "year": 3
+            }
+          },
+          {
+            "name": "Backend Developer",
+            "user": {
+              "id": 6,
+              "name": "Sophia Martinez",
+              "major": "Digital Engineering",
+              "year": 3
+            }
+          },
+          {
+            "name": "UI/UX Designer",
+            "user": {
+              "id": 1,
+              "name": "John Carter",
+              "major": "Digital Engineering",
+              "year": 3
+            }
+          },
+          {
+            "name": "Frontend Developer",
+            "user": null
+          }
+        ],
+        "members": [
+          {
+            "id": 5,
+            "name": "Oliver Smith",
+            "major": "Computer Engineering",
+            "year": 3,
+            "role": "ML Engineer",
+            "owner": true,
+            "skills": [
+              "React",
+              "JavaScript",
+              "Figma"
+            ]
+          },
+          {
+            "id": 6,
+            "name": "Sophia Martinez",
+            "major": "Digital Engineering",
+            "year": 3,
+            "role": "Backend Developer",
+            "owner": false,
+            "skills": [
+              "Figma",
+              "UI/UX Design",
+              "React"
+            ]
+          },
+          {
+            "id": 1,
+            "name": "John Carter",
+            "major": "Digital Engineering",
+            "year": 3,
+            "role": "UI/UX Designer",
+            "owner": false,
+            "skills": [
+              "React",
+              "UI/UX Design",
+              "Figma",
+              "JavaScript",
+              "Python",
+              "SQL"
+            ]
+          }
+        ],
+        "open_roles": [
+          "Frontend Developer"
+        ],
+        "my_role": "member",
+        "my_request": null,
+        "pending_requests": 0,
+        "pending_invitations": 0
+      }
+    ],
+    "activity": [
+      {
+        "id": 1,
+        "kind": "request",
+        "request_id": 1,
+        "text": "Oliver Smith requested to join Campus Food Waste Tracker as Frontend Developer.",
+        "created_at": "2026-10-29T18:04:28.165Z",
+        "unread": true
+      },
+      {
+        "id": 2,
+        "kind": "invite",
+        "request_id": 3,
+        "text": "Henry Moore invited you to join Mobile Health Reminder as UI/UX Designer.",
+        "created_at": "2026-10-29T17:16:28.165Z",
+        "unread": true
+      },
+      {
+        "id": 3,
+        "kind": "request",
+        "request_id": 2,
+        "text": "Ethan Johnson requested to join Campus Food Waste Tracker as Frontend Developer.",
+        "created_at": "2026-10-29T15:16:28.165Z",
+        "unread": true
+      },
+      {
+        "id": 4,
+        "kind": "accepted",
+        "text": "Your request to join AI Study Buddy Chatbot was accepted. Say hi to your new team!",
+        "created_at": "2026-10-28T16:16:28.165Z",
+        "unread": false
+      }
+    ]
+  },
+  "listProjects": [
+    {
+      "id": 2,
+      "title": "AI Study Buddy Chatbot",
+      "category": "Competition",
+      "course": "National AI Hackathon",
+      "description": "An LLM-powered chatbot that turns lecture slides into quizzes and flashcards for exam revision.",
+      "cover_url": "",
+      "owner": {
+        "id": 5,
+        "name": "Oliver Smith",
+        "major": "Computer Engineering",
+        "year": 3
+      },
+      "max_size": 4,
+      "accepting": true,
+      "status": "recruiting",
+      "created_at": "2026-10-20T18:16:28.165Z",
+      "duration": "Oct – Nov 2026",
+      "meeting": "Online, weekends",
+      "deadline": "2026-11-10",
+      "saved": true,
+      "skills": [
+        [
+          "Python",
+          true
+        ],
+        [
+          "NLP",
+          false
+        ],
+        [
+          "React",
+          true
+        ],
+        [
+          "UI/UX Design",
+          true
+        ]
+      ],
+      "match": 75,
+      "roles": [
+        {
+          "name": "ML Engineer",
+          "user": {
+            "id": 5,
+            "name": "Oliver Smith",
+            "major": "Computer Engineering",
+            "year": 3
+          }
+        },
+        {
+          "name": "Backend Developer",
+          "user": {
+            "id": 6,
+            "name": "Sophia Martinez",
+            "major": "Digital Engineering",
+            "year": 3
+          }
+        },
+        {
+          "name": "UI/UX Designer",
+          "user": {
+            "id": 1,
+            "name": "John Carter",
+            "major": "Digital Engineering",
+            "year": 3
+          }
+        },
+        {
+          "name": "Frontend Developer",
+          "user": null
+        }
+      ],
+      "members": [
+        {
+          "id": 5,
+          "name": "Oliver Smith",
+          "major": "Computer Engineering",
+          "year": 3,
+          "role": "ML Engineer",
+          "owner": true,
+          "skills": [
+            "React",
+            "JavaScript",
+            "Figma"
+          ]
+        },
+        {
+          "id": 6,
+          "name": "Sophia Martinez",
+          "major": "Digital Engineering",
+          "year": 3,
+          "role": "Backend Developer",
+          "owner": false,
+          "skills": [
+            "Figma",
+            "UI/UX Design",
+            "React"
+          ]
+        },
+        {
+          "id": 1,
+          "name": "John Carter",
+          "major": "Digital Engineering",
+          "year": 3,
+          "role": "UI/UX Designer",
+          "owner": false,
+          "skills": [
+            "React",
+            "UI/UX Design",
+            "Figma",
+            "JavaScript",
+            "Python",
+            "SQL"
+          ]
+        }
+      ],
+      "open_roles": [
+        "Frontend Developer"
+      ],
+      "my_role": "member",
+      "my_request": null,
+      "pending_requests": 0,
+      "pending_invitations": 0
+    },
+    {
+      "id": 3,
+      "title": "Smart Parking IoT System",
+      "category": "Senior Project",
+      "description": "Sensor network that shows free parking spots around campus in real time via a mobile web app.",
+      "cover_url": "",
+      "owner": {
+        "id": 7,
+        "name": "Ethan Johnson",
+        "major": "Information Technology",
+        "year": 2
+      },
+      "max_size": 5,
+      "accepting": true,
+      "status": "recruiting",
+      "created_at": "2026-10-15T18:16:28.165Z",
+      "duration": "Full academic year",
+      "meeting": "Lab, Tue & Thu",
+      "deadline": "2026-12-15",
+      "saved": false,
+      "skills": [
+        [
+          "Python",
+          true
+        ],
+        [
+          "IoT",
+          false
+        ],
+        [
+          "AWS",
+          false
+        ],
+        [
+          "SQL",
+          true
+        ]
+      ],
+      "match": 50,
+      "roles": [
+        {
+          "name": "IoT Engineer",
+          "user": {
+            "id": 7,
+            "name": "Ethan Johnson",
+            "major": "Information Technology",
+            "year": 2
+          }
+        },
+        {
+          "name": "Backend Developer",
+          "user": {
+            "id": 8,
+            "name": "Liam Garcia",
+            "major": "Computer Engineering",
+            "year": 4
+          }
+        },
+        {
+          "name": "Data Analyst",
+          "user": {
+            "id": 9,
+            "name": "Ava Thompson",
+            "major": "Digital Engineering",
+            "year": 2
+          }
+        },
+        {
+          "name": "Hardware",
+          "user": {
+            "id": 10,
+            "name": "Noah Davis",
+            "major": "Industrial Engineering",
+            "year": 3
+          }
+        },
+        {
+          "name": "Cloud Engineer",
+          "user": null
+        }
+      ],
+      "members": [
+        {
+          "id": 7,
+          "name": "Ethan Johnson",
+          "major": "Information Technology",
+          "year": 2,
+          "role": "IoT Engineer",
+          "owner": true,
+          "skills": [
+            "React",
+            "Node.js",
+            "SQL"
+          ]
+        },
+        {
+          "id": 8,
+          "name": "Liam Garcia",
+          "major": "Computer Engineering",
+          "year": 4,
+          "role": "Backend Developer",
+          "owner": false,
+          "skills": [
+            "UI/UX Design",
+            "Flutter",
+            "Python"
+          ]
+        },
+        {
+          "id": 9,
+          "name": "Ava Thompson",
+          "major": "Digital Engineering",
+          "year": 2,
+          "role": "Data Analyst",
+          "owner": false,
+          "skills": [
+            "JavaScript",
+            "Vue.js",
+            "CSS"
+          ]
+        },
+        {
+          "id": 10,
+          "name": "Noah Davis",
+          "major": "Industrial Engineering",
+          "year": 3,
+          "role": "Hardware",
+          "owner": false,
+          "skills": [
+            "UI/UX Design",
+            "Research"
+          ]
+        }
+      ],
+      "open_roles": [
+        "Cloud Engineer"
+      ],
+      "my_role": null,
+      "my_request": null,
+      "pending_requests": 0,
+      "pending_invitations": 0
+    },
+    {
+      "id": 4,
+      "title": "City Air Quality Viz",
+      "category": "Research",
+      "description": "Interactive map visualizing PM2.5 history and forecasts for city districts using open data.",
+      "cover_url": "",
+      "owner": {
+        "id": 11,
+        "name": "Grace Hall",
+        "major": "Data Science",
+        "year": 3
+      },
+      "max_size": 3,
+      "accepting": true,
+      "status": "recruiting",
+      "created_at": "2026-10-26T18:16:28.165Z",
+      "duration": "8 weeks",
+      "meeting": "Online, flexible",
+      "deadline": "2026-11-20",
+      "saved": false,
+      "skills": [
+        [
+          "Python",
+          true
+        ],
+        [
+          "Pandas",
+          false
+        ],
+        [
+          "D3.js",
+          false
+        ],
+        [
+          "JavaScript",
+          true
+        ]
+      ],
+      "match": 50,
+      "roles": [
+        {
+          "name": "Data Scientist",
+          "user": {
+            "id": 11,
+            "name": "Grace Hall",
+            "major": "Data Science",
+            "year": 3
+          }
+        },
+        {
+          "name": "Frontend Developer",
+          "user": {
+            "id": 12,
+            "name": "Ryan King",
+            "major": "Computer Engineering",
+            "year": 2
+          }
+        },
+        {
+          "name": "Data Analyst",
+          "user": null
+        }
+      ],
+      "members": [
+        {
+          "id": 11,
+          "name": "Grace Hall",
+          "major": "Data Science",
+          "year": 3,
+          "role": "Data Scientist",
+          "owner": true,
+          "skills": [
+            "Python",
+            "Pandas",
+            "D3.js"
+          ]
+        },
+        {
+          "id": 12,
+          "name": "Ryan King",
+          "major": "Computer Engineering",
+          "year": 2,
+          "role": "Frontend Developer",
+          "owner": false,
+          "skills": [
+            "JavaScript",
+            "React"
+          ]
+        }
+      ],
+      "open_roles": [
+        "Data Analyst"
+      ],
+      "my_role": null,
+      "my_request": null,
+      "pending_requests": 0,
+      "pending_invitations": 0
+    },
+    {
+      "id": 5,
+      "title": "Mobile Health Reminder",
+      "category": "Startup Idea",
+      "description": "Medication and appointment reminder app for elderly users with caregiver notifications.",
+      "cover_url": "",
+      "owner": {
+        "id": 13,
+        "name": "Henry Moore",
+        "major": "Business Technology",
+        "year": 4
+      },
+      "max_size": 4,
+      "accepting": true,
+      "status": "recruiting",
+      "created_at": "2026-10-29T13:16:28.165Z",
+      "duration": "Ongoing",
+      "meeting": "Co-working space, Fridays",
+      "deadline": "2026-12-01",
+      "saved": false,
+      "skills": [
+        [
+          "Flutter",
+          false
+        ],
+        [
+          "Figma",
+          true
+        ],
+        [
+          "UI/UX Design",
+          true
+        ],
+        [
+          "Firebase",
+          false
+        ]
+      ],
+      "match": 50,
+      "roles": [
+        {
+          "name": "Product Lead",
+          "user": {
+            "id": 13,
+            "name": "Henry Moore",
+            "major": "Business Technology",
+            "year": 4
+          }
+        },
+        {
+          "name": "Mobile Developer",
+          "user": {
+            "id": 14,
+            "name": "Chloe Kim",
+            "major": "Computer Engineering",
+            "year": 3
+          }
+        },
+        {
+          "name": "UI/UX Designer",
+          "user": null
+        },
+        {
+          "name": "Backend Developer",
+          "user": null
+        }
+      ],
+      "members": [
+        {
+          "id": 13,
+          "name": "Henry Moore",
+          "major": "Business Technology",
+          "year": 4,
+          "role": "Product Lead",
+          "owner": true,
+          "skills": [
+            "Figma",
+            "Product"
+          ]
+        },
+        {
+          "id": 14,
+          "name": "Chloe Kim",
+          "major": "Computer Engineering",
+          "year": 3,
+          "role": "Mobile Developer",
+          "owner": false,
+          "skills": [
+            "Flutter",
+            "Firebase"
+          ]
+        }
+      ],
+      "open_roles": [
+        "UI/UX Designer",
+        "Backend Developer"
+      ],
+      "my_role": null,
+      "my_request": null,
+      "pending_requests": 0,
+      "pending_invitations": 1
+    },
+    {
+      "id": 1,
+      "title": "Campus Food Waste Tracker",
+      "category": "Course Project",
+      "course": "DES424 Cloud-based App Dev",
+      "description": "Canteens on campus throw away a surprising amount of food every day, but nobody measures it. We’re building a web app where canteen staff log leftovers in under 30 seconds and everyone sees weekly dashboards. Goal: cut food waste by 20% this semester.",
+      "cover_url": "",
+      "owner": {
+        "id": 1,
+        "name": "John Carter",
+        "major": "Digital Engineering",
+        "year": 3
+      },
+      "max_size": 5,
+      "accepting": true,
+      "status": "recruiting",
+      "created_at": "2026-10-03T18:16:28.165Z",
+      "duration": "Aug – Dec 2026",
+      "meeting": "On campus, 2× / week",
+      "deadline": "2026-11-30",
+      "saved": false,
+      "skills": [
+        [
+          "React",
+          true
+        ],
+        [
+          "FastAPI",
+          false
+        ],
+        [
+          "PostgreSQL",
+          false
+        ],
+        [
+          "AWS",
+          false
+        ]
+      ],
+      "match": 25,
+      "roles": [
+        {
+          "name": "UI/UX Designer",
+          "user": {
+            "id": 1,
+            "name": "John Carter",
+            "major": "Digital Engineering",
+            "year": 3
+          }
+        },
+        {
+          "name": "Backend Developer",
+          "user": {
+            "id": 2,
+            "name": "Emma Wilson",
+            "major": "Computer Engineering",
+            "year": 3
+          }
+        },
+        {
+          "name": "Data & QA",
+          "user": {
+            "id": 3,
+            "name": "Lucas Brown",
+            "major": "Digital Engineering",
+            "year": 2
+          }
+        },
+        {
+          "name": "Cloud Engineer",
+          "user": {
+            "id": 4,
+            "name": "Daniel Ortiz",
+            "major": "Computer Engineering",
+            "year": 4
+          }
+        },
+        {
+          "name": "Frontend Developer",
+          "user": null
+        }
+      ],
+      "members": [
+        {
+          "id": 1,
+          "name": "John Carter",
+          "major": "Digital Engineering",
+          "year": 3,
+          "role": "UI/UX Designer",
+          "owner": true,
+          "skills": [
+            "React",
+            "UI/UX Design",
+            "Figma",
+            "JavaScript",
+            "Python",
+            "SQL"
+          ]
+        },
+        {
+          "id": 2,
+          "name": "Emma Wilson",
+          "major": "Computer Engineering",
+          "year": 3,
+          "role": "Backend Developer",
+          "owner": false,
+          "skills": [
+            "FastAPI",
+            "PostgreSQL",
+            "Python"
+          ]
+        },
+        {
+          "id": 3,
+          "name": "Lucas Brown",
+          "major": "Digital Engineering",
+          "year": 2,
+          "role": "Data & QA",
+          "owner": false,
+          "skills": [
+            "SQL",
+            "Pytest",
+            "Python"
+          ]
+        },
+        {
+          "id": 4,
+          "name": "Daniel Ortiz",
+          "major": "Computer Engineering",
+          "year": 4,
+          "role": "Cloud Engineer",
+          "owner": false,
+          "skills": [
+            "AWS",
+            "Docker",
+            "Linux"
+          ]
+        }
+      ],
+      "open_roles": [
+        "Frontend Developer"
+      ],
+      "my_role": "owner",
+      "my_request": null,
+      "pending_requests": 2,
+      "pending_invitations": 1
+    },
+    {
+      "id": 6,
+      "title": "Robotics Challenge Team",
+      "category": "Competition",
+      "description": "Build an autonomous line-following robot for the national university robotics challenge.",
+      "cover_url": "",
+      "owner": {
+        "id": 15,
+        "name": "Mia Turner",
+        "major": "Mechanical Engineering",
+        "year": 4
+      },
+      "max_size": 3,
+      "accepting": false,
+      "status": "full",
+      "created_at": "2026-09-19T18:16:28.165Z",
+      "duration": "Sep – Dec 2026",
+      "meeting": "Workshop, daily",
+      "deadline": "2026-10-01",
+      "saved": false,
+      "skills": [
+        [
+          "C++",
+          false
+        ],
+        [
+          "Arduino",
+          false
+        ],
+        [
+          "CAD",
+          false
+        ],
+        [
+          "Python",
+          true
+        ]
+      ],
+      "match": 25,
+      "roles": [
+        {
+          "name": "Team Lead",
+          "user": {
+            "id": 15,
+            "name": "Mia Turner",
+            "major": "Mechanical Engineering",
+            "year": 4
+          }
+        },
+        {
+          "name": "Hardware",
+          "user": {
+            "id": 16,
+            "name": "Leo Adams",
+            "major": "Electrical Engineering",
+            "year": 3
+          }
+        },
+        {
+          "name": "Software",
+          "user": {
+            "id": 17,
+            "name": "Zoe Baker",
+            "major": "Computer Engineering",
+            "year": 3
+          }
+        }
+      ],
+      "members": [
+        {
+          "id": 15,
+          "name": "Mia Turner",
+          "major": "Mechanical Engineering",
+          "year": 4,
+          "role": "Team Lead",
+          "owner": true,
+          "skills": [
+            "C++",
+            "Arduino",
+            "CAD"
+          ]
+        },
+        {
+          "id": 16,
+          "name": "Leo Adams",
+          "major": "Electrical Engineering",
+          "year": 3,
+          "role": "Hardware",
+          "owner": false,
+          "skills": [
+            "Arduino",
+            "C++"
+          ]
+        },
+        {
+          "id": 17,
+          "name": "Zoe Baker",
+          "major": "Computer Engineering",
+          "year": 3,
+          "role": "Software",
+          "owner": false,
+          "skills": [
+            "Python",
+            "C++"
+          ]
+        }
+      ],
+      "open_roles": [],
+      "my_role": null,
+      "my_request": null,
+      "pending_requests": 0,
+      "pending_invitations": 0
+    }
+  ],
+  "listFilterOptions": {
+    "categories": [
+      {
+        "name": "Course Project",
+        "count": 1
+      },
+      {
+        "name": "Competition",
+        "count": 2
+      },
+      {
+        "name": "Senior Project",
+        "count": 1
+      },
+      {
+        "name": "Startup Idea",
+        "count": 1
+      },
+      {
+        "name": "Research",
+        "count": 1
+      }
+    ],
+    "roles": [
+      "Backend Developer",
+      "Cloud Engineer",
+      "Data Analyst",
+      "Frontend Developer",
+      "UI/UX Designer"
+    ]
+  },
+  "listRequests": [
+    {
+      "id": 1,
+      "type": "received",
+      "kind": "request",
+      "status": "pending",
+      "role": "Frontend Developer",
+      "message": "I’ve built two React dashboards for my internship and would love to help with the charts.",
+      "created_at": "2026-10-29T18:04:28.165Z",
+      "project": {
+        "id": 1,
+        "title": "Campus Food Waste Tracker",
+        "open_spots": 1
+      },
+      "student": {
+        "id": 5,
+        "name": "Oliver Smith",
+        "major": "Computer Engineering",
+        "year": 3
+      },
+      "by": null,
+      "match": 25
+    },
+    {
+      "id": 2,
+      "type": "received",
+      "kind": "request",
+      "status": "pending",
+      "role": "Frontend Developer",
+      "message": "I want to improve my React skills on a real project.",
+      "created_at": "2026-10-29T15:16:28.165Z",
+      "project": {
+        "id": 1,
+        "title": "Campus Food Waste Tracker",
+        "open_spots": 1
+      },
+      "student": {
+        "id": 7,
+        "name": "Ethan Johnson",
+        "major": "Information Technology",
+        "year": 2
+      },
+      "by": null,
+      "match": 25
+    },
+    {
+      "id": 3,
+      "type": "invitation",
+      "kind": "invitation",
+      "status": "pending",
+      "role": "UI/UX Designer",
+      "message": "Your Figma portfolio is great — we need someone to design our reminder screens!",
+      "created_at": "2026-10-29T17:16:28.165Z",
+      "project": {
+        "id": 5,
+        "title": "Mobile Health Reminder",
+        "open_spots": 2
+      },
+      "student": {
+        "id": 1,
+        "name": "John Carter",
+        "major": "Digital Engineering",
+        "year": 3
+      },
+      "by": {
+        "id": 13,
+        "name": "Henry Moore",
+        "major": "Business Technology",
+        "year": 4
+      },
+      "match": 50
+    },
+    {
+      "id": 4,
+      "type": "sent",
+      "kind": "request",
+      "status": "rejected",
+      "role": "Software",
+      "message": "I can help with the dashboard for sensor data.",
+      "created_at": "2026-10-03T18:16:28.165Z",
+      "project": {
+        "id": 6,
+        "title": "Robotics Challenge Team",
+        "open_spots": 0
+      },
+      "student": {
+        "id": 1,
+        "name": "John Carter",
+        "major": "Digital Engineering",
+        "year": 3
+      },
+      "by": null,
+      "match": 25
+    },
+    {
+      "id": 5,
+      "type": "received",
+      "kind": "request",
+      "status": "accepted",
+      "role": "Data & QA",
+      "message": "Happy to own testing.",
+      "created_at": "2026-10-08T18:16:28.165Z",
+      "project": {
+        "id": 1,
+        "title": "Campus Food Waste Tracker",
+        "open_spots": 1
+      },
+      "student": {
+        "id": 3,
+        "name": "Lucas Brown",
+        "major": "Digital Engineering",
+        "year": 2
+      },
+      "by": null,
+      "match": 0
+    },
+    {
+      "id": 6,
+      "type": "sent",
+      "kind": "invitation",
+      "status": "pending",
+      "role": "Frontend Developer",
+      "message": "Would love your help on the dashboard UI.",
+      "created_at": "2026-10-28T18:16:28.165Z",
+      "project": {
+        "id": 1,
+        "title": "Campus Food Waste Tracker",
+        "open_spots": 1
+      },
+      "student": {
+        "id": 6,
+        "name": "Sophia Martinez",
+        "major": "Digital Engineering",
+        "year": 3
+      },
+      "by": {
+        "id": 1,
+        "name": "John Carter",
+        "major": "Digital Engineering",
+        "year": 3
+      },
+      "match": 25
+    }
+  ],
+  "listNotifications": [
+    {
+      "id": 1,
+      "kind": "request",
+      "request_id": 1,
+      "text": "Oliver Smith requested to join Campus Food Waste Tracker as Frontend Developer.",
+      "created_at": "2026-10-29T18:04:28.165Z",
+      "unread": true
+    },
+    {
+      "id": 2,
+      "kind": "invite",
+      "request_id": 3,
+      "text": "Henry Moore invited you to join Mobile Health Reminder as UI/UX Designer.",
+      "created_at": "2026-10-29T17:16:28.165Z",
+      "unread": true
+    },
+    {
+      "id": 3,
+      "kind": "request",
+      "request_id": 2,
+      "text": "Ethan Johnson requested to join Campus Food Waste Tracker as Frontend Developer.",
+      "created_at": "2026-10-29T15:16:28.165Z",
+      "unread": true
+    },
+    {
+      "id": 4,
+      "kind": "accepted",
+      "text": "Your request to join AI Study Buddy Chatbot was accepted. Say hi to your new team!",
+      "created_at": "2026-10-28T16:16:28.165Z",
+      "unread": false
+    },
+    {
+      "id": 5,
+      "kind": "team",
+      "text": "Lucas Brown joined Campus Food Waste Tracker as Data & QA.",
+      "created_at": "2026-10-27T18:16:28.165Z",
+      "unread": false
+    },
+    {
+      "id": 6,
+      "kind": "declined",
+      "text": "Your request to join Robotics Challenge Team was declined. The team is now complete.",
+      "created_at": "2026-10-03T18:16:28.165Z",
+      "unread": false
+    },
+    {
+      "id": 7,
+      "kind": "match",
+      "text": "3 new projects match your skills: React, UI/UX Design, Figma.",
+      "created_at": "2026-10-02T18:16:28.165Z",
+      "unread": false
+    }
+  ],
+  "adminOverview": {
+    "stats": {
+      "students": 1248,
+      "projects": 382,
+      "teams": 214,
+      "reports": 4,
+      "deltas": {
+        "students": 86,
+        "projects": 41,
+        "teams": 29
+      }
+    },
+    "activity": [
+      {
+        "week": "W1",
+        "requests": 40,
+        "projects": 20
+      },
+      {
+        "week": "W2",
+        "requests": 55,
+        "projects": 28
+      },
+      {
+        "week": "W3",
+        "requests": 48,
+        "projects": 24
+      },
+      {
+        "week": "W4",
+        "requests": 70,
+        "projects": 35
+      },
+      {
+        "week": "W5",
+        "requests": 62,
+        "projects": 31
+      },
+      {
+        "week": "W6",
+        "requests": 85,
+        "projects": 43
+      },
+      {
+        "week": "W7",
+        "requests": 78,
+        "projects": 39
+      },
+      {
+        "week": "W8",
+        "requests": 92,
+        "projects": 46
+      },
+      {
+        "week": "W9",
+        "requests": 66,
+        "projects": 33
+      },
+      {
+        "week": "W10",
+        "requests": 74,
+        "projects": 37
+      },
+      {
+        "week": "W11",
+        "requests": 88,
+        "projects": 44
+      },
+      {
+        "week": "W12",
+        "requests": 96,
+        "projects": 48
+      }
+    ],
+    "categories": [
+      {
+        "name": "Course Project",
+        "count": 39
+      },
+      {
+        "name": "Competition",
+        "count": 66
+      },
+      {
+        "name": "Senior Project",
+        "count": 39
+      },
+      {
+        "name": "Startup Idea",
+        "count": 39
+      },
+      {
+        "name": "Research",
+        "count": 39
+      }
+    ],
+    "reports": [
+      {
+        "id": 1,
+        "project": "Easy A — We Do Your Assignment",
+        "owner": "user_4412",
+        "reason": "Academic dishonesty",
+        "reporters": 3,
+        "created_at": "2026-10-28T22:16:28.165Z",
+        "status": "open"
+      },
+      {
+        "id": 2,
+        "project": "CRYPTO PUMP GROUP",
+        "owner": "newuser_99",
+        "reason": "Spam / scam",
+        "reporters": 5,
+        "created_at": "2026-10-28T02:16:28.165Z",
+        "status": "open"
+      },
+      {
+        "id": 3,
+        "project": "test test test",
+        "owner": "Chloe Kim",
+        "reason": "Invalid / empty",
+        "reporters": 1,
+        "created_at": "2026-10-26T18:16:28.165Z",
+        "status": "open"
+      },
+      {
+        "id": 4,
+        "project": "Hackathon team – need 10 people",
+        "owner": "Jack Scott",
+        "reason": "Misleading info",
+        "reporters": 2,
+        "created_at": "2026-10-25T18:16:28.165Z",
+        "status": "open"
+      }
+    ],
+    "users": [
+      {
+        "id": 1,
+        "name": "John Carter",
+        "major": "Digital Engineering",
+        "year": 3,
+        "email": "6600123456@student.uni.ac.th",
+        "student_id": "6600123456",
+        "role": "admin",
+        "status": "active",
+        "projects": 2
+      },
+      {
+        "id": 2,
+        "name": "Emma Wilson",
+        "major": "Computer Engineering",
+        "year": 3,
+        "email": "6600000222@student.uni.ac.th",
+        "student_id": "6600000222",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 3,
+        "name": "Lucas Brown",
+        "major": "Digital Engineering",
+        "year": 2,
+        "email": "6600000333@student.uni.ac.th",
+        "student_id": "6600000333",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 4,
+        "name": "Daniel Ortiz",
+        "major": "Computer Engineering",
+        "year": 4,
+        "email": "6600000444@student.uni.ac.th",
+        "student_id": "6600000444",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 5,
+        "name": "Oliver Smith",
+        "major": "Computer Engineering",
+        "year": 3,
+        "email": "6600000555@student.uni.ac.th",
+        "student_id": "6600000555",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 6,
+        "name": "Sophia Martinez",
+        "major": "Digital Engineering",
+        "year": 3,
+        "email": "6600000666@student.uni.ac.th",
+        "student_id": "6600000666",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 7,
+        "name": "Ethan Johnson",
+        "major": "Information Technology",
+        "year": 2,
+        "email": "6600000777@student.uni.ac.th",
+        "student_id": "6600000777",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 8,
+        "name": "Liam Garcia",
+        "major": "Computer Engineering",
+        "year": 4,
+        "email": "6600000888@student.uni.ac.th",
+        "student_id": "6600000888",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 9,
+        "name": "Ava Thompson",
+        "major": "Digital Engineering",
+        "year": 2,
+        "email": "6600000999@student.uni.ac.th",
+        "student_id": "6600000999",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 10,
+        "name": "Noah Davis",
+        "major": "Industrial Engineering",
+        "year": 3,
+        "email": "6600001110@student.uni.ac.th",
+        "student_id": "6600001110",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 11,
+        "name": "Grace Hall",
+        "major": "Data Science",
+        "year": 3,
+        "email": "6600001221@student.uni.ac.th",
+        "student_id": "6600001221",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 12,
+        "name": "Ryan King",
+        "major": "Computer Engineering",
+        "year": 2,
+        "email": "6600001332@student.uni.ac.th",
+        "student_id": "6600001332",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 13,
+        "name": "Henry Moore",
+        "major": "Business Technology",
+        "year": 4,
+        "email": "6600001443@student.uni.ac.th",
+        "student_id": "6600001443",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 14,
+        "name": "Chloe Kim",
+        "major": "Computer Engineering",
+        "year": 3,
+        "email": "6600001554@student.uni.ac.th",
+        "student_id": "6600001554",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 15,
+        "name": "Mia Turner",
+        "major": "Mechanical Engineering",
+        "year": 4,
+        "email": "6600001665@student.uni.ac.th",
+        "student_id": "6600001665",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 16,
+        "name": "Leo Adams",
+        "major": "Electrical Engineering",
+        "year": 3,
+        "email": "6600001776@student.uni.ac.th",
+        "student_id": "6600001776",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 17,
+        "name": "Zoe Baker",
+        "major": "Computer Engineering",
+        "year": 3,
+        "email": "6600001887@student.uni.ac.th",
+        "student_id": "6600001887",
+        "role": "student",
+        "status": "active",
+        "projects": 1
+      },
+      {
+        "id": 18,
+        "name": "Jack Scott",
+        "major": "Information Technology",
+        "year": 2,
+        "email": "6600001998@student.uni.ac.th",
+        "student_id": "6600001998",
+        "role": "student",
+        "status": "suspended",
+        "projects": 0
+      }
+    ]
+  },
+  "getProject": {
+    "id": 1,
+    "title": "Campus Food Waste Tracker",
+    "category": "Course Project",
+    "course": "DES424 Cloud-based App Dev",
+    "description": "Canteens on campus throw away a surprising amount of food every day, but nobody measures it. We’re building a web app where canteen staff log leftovers in under 30 seconds and everyone sees weekly dashboards. Goal: cut food waste by 20% this semester.",
+    "cover_url": "",
+    "owner": {
+      "id": 1,
+      "name": "John Carter",
+      "major": "Digital Engineering",
+      "year": 3
+    },
+    "max_size": 5,
+    "accepting": true,
+    "status": "recruiting",
+    "created_at": "2026-10-03T18:16:28.165Z",
+    "duration": "Aug – Dec 2026",
+    "meeting": "On campus, 2× / week",
+    "deadline": "2026-11-30",
+    "saved": false,
+    "skills": [
+      [
+        "React",
+        true
+      ],
+      [
+        "FastAPI",
+        false
+      ],
+      [
+        "PostgreSQL",
+        false
+      ],
+      [
+        "AWS",
+        false
+      ]
+    ],
+    "match": 25,
+    "roles": [
+      {
+        "name": "UI/UX Designer",
+        "user": {
+          "id": 1,
+          "name": "John Carter",
+          "major": "Digital Engineering",
+          "year": 3
+        }
+      },
+      {
+        "name": "Backend Developer",
+        "user": {
+          "id": 2,
+          "name": "Emma Wilson",
+          "major": "Computer Engineering",
+          "year": 3
+        }
+      },
+      {
+        "name": "Data & QA",
+        "user": {
+          "id": 3,
+          "name": "Lucas Brown",
+          "major": "Digital Engineering",
+          "year": 2
+        }
+      },
+      {
+        "name": "Cloud Engineer",
+        "user": {
+          "id": 4,
+          "name": "Daniel Ortiz",
+          "major": "Computer Engineering",
+          "year": 4
+        }
+      },
+      {
+        "name": "Frontend Developer",
+        "user": null
+      }
+    ],
+    "members": [
+      {
+        "id": 1,
+        "name": "John Carter",
+        "major": "Digital Engineering",
+        "year": 3,
+        "role": "UI/UX Designer",
+        "owner": true,
+        "skills": [
+          "React",
+          "UI/UX Design",
+          "Figma",
+          "JavaScript",
+          "Python",
+          "SQL"
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Emma Wilson",
+        "major": "Computer Engineering",
+        "year": 3,
+        "role": "Backend Developer",
+        "owner": false,
+        "skills": [
+          "FastAPI",
+          "PostgreSQL",
+          "Python"
+        ]
+      },
+      {
+        "id": 3,
+        "name": "Lucas Brown",
+        "major": "Digital Engineering",
+        "year": 2,
+        "role": "Data & QA",
+        "owner": false,
+        "skills": [
+          "SQL",
+          "Pytest",
+          "Python"
+        ]
+      },
+      {
+        "id": 4,
+        "name": "Daniel Ortiz",
+        "major": "Computer Engineering",
+        "year": 4,
+        "role": "Cloud Engineer",
+        "owner": false,
+        "skills": [
+          "AWS",
+          "Docker",
+          "Linux"
+        ]
+      }
+    ],
+    "open_roles": [
+      "Frontend Developer"
+    ],
+    "my_role": "owner",
+    "my_request": null,
+    "pending_requests": 2,
+    "pending_invitations": 1
+  },
+  "getUser": {
+    "id": 2,
+    "name": "Emma Wilson",
+    "major": "Computer Engineering",
+    "year": 3,
+    "bio": "",
+    "skills": [
+      {
+        "name": "FastAPI",
+        "level": "Intermediate"
+      },
+      {
+        "name": "PostgreSQL",
+        "level": "Intermediate"
+      },
+      {
+        "name": "Python",
+        "level": "Intermediate"
+      }
+    ],
+    "interests": [],
+    "teams": [
+      {
+        "id": 1,
+        "title": "Campus Food Waste Tracker"
+      }
+    ]
+  },
+  "getRecommendedStudents": [
+    {
+      "id": 5,
+      "name": "Oliver Smith",
+      "major": "Computer Engineering",
+      "year": 3,
+      "match": 25,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "React",
+          true
+        ],
+        [
+          "JavaScript",
+          false
+        ],
+        [
+          "Figma",
+          false
+        ]
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Sophia Martinez",
+      "major": "Digital Engineering",
+      "year": 3,
+      "match": 25,
+      "fits": "Frontend Developer",
+      "invited": true,
+      "skills": [
+        [
+          "Figma",
+          false
+        ],
+        [
+          "UI/UX Design",
+          false
+        ],
+        [
+          "React",
+          true
+        ]
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Ethan Johnson",
+      "major": "Information Technology",
+      "year": 2,
+      "match": 25,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "React",
+          true
+        ],
+        [
+          "Node.js",
+          false
+        ],
+        [
+          "SQL",
+          false
+        ]
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Ryan King",
+      "major": "Computer Engineering",
+      "year": 2,
+      "match": 25,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "JavaScript",
+          false
+        ],
+        [
+          "React",
+          true
+        ]
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Liam Garcia",
+      "major": "Computer Engineering",
+      "year": 4,
+      "match": 0,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "UI/UX Design",
+          false
+        ],
+        [
+          "Flutter",
+          false
+        ],
+        [
+          "Python",
+          false
+        ]
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Ava Thompson",
+      "major": "Digital Engineering",
+      "year": 2,
+      "match": 0,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "JavaScript",
+          false
+        ],
+        [
+          "Vue.js",
+          false
+        ],
+        [
+          "CSS",
+          false
+        ]
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Noah Davis",
+      "major": "Industrial Engineering",
+      "year": 3,
+      "match": 0,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "UI/UX Design",
+          false
+        ],
+        [
+          "Research",
+          false
+        ]
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Grace Hall",
+      "major": "Data Science",
+      "year": 3,
+      "match": 0,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "Python",
+          false
+        ],
+        [
+          "Pandas",
+          false
+        ],
+        [
+          "D3.js",
+          false
+        ]
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Henry Moore",
+      "major": "Business Technology",
+      "year": 4,
+      "match": 0,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "Figma",
+          false
+        ],
+        [
+          "Product",
+          false
+        ]
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Chloe Kim",
+      "major": "Computer Engineering",
+      "year": 3,
+      "match": 0,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "Flutter",
+          false
+        ],
+        [
+          "Firebase",
+          false
+        ]
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Mia Turner",
+      "major": "Mechanical Engineering",
+      "year": 4,
+      "match": 0,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "C++",
+          false
+        ],
+        [
+          "Arduino",
+          false
+        ],
+        [
+          "CAD",
+          false
+        ]
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Leo Adams",
+      "major": "Electrical Engineering",
+      "year": 3,
+      "match": 0,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "Arduino",
+          false
+        ],
+        [
+          "C++",
+          false
+        ]
+      ]
+    },
+    {
+      "id": 17,
+      "name": "Zoe Baker",
+      "major": "Computer Engineering",
+      "year": 3,
+      "match": 0,
+      "fits": "Frontend Developer",
+      "invited": false,
+      "skills": [
+        [
+          "Python",
+          false
+        ],
+        [
+          "C++",
+          false
+        ]
+      ]
+    }
+  ]
+}

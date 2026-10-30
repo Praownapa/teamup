@@ -1,0 +1,82 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/projects",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/projects/1",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/projects/3",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/projects/new",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/teammates",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/requests",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/teams",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/teams/1",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/profile",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/students/2",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/notifications",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/admin",
+      "rendered": true,
+      "error": false
+    },
+    {
+      "path": "/welcome",
+      "rendered": true,
+      "error": false
+    }
+  ],
+  "mobile": {
+    "navigation": true,
+    "filters": true,
+    "width": 390
+  },
+  "profileSaved": true,
+  "preferenceSaved": true,
+  "errors": []
+}

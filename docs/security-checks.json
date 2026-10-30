@@ -1,0 +1,21 @@
+{
+  "candidate_files": 70,
+  "pattern_matches": [],
+  "endpoint_file_unchanged": true,
+  "ignored_samples": [
+    ".aws/credentials",
+    ".env",
+    ".env.local",
+    ".env.production",
+    ".env.production.local",
+    "dist/index.html",
+    "key.key",
+    "node_modules/x",
+    "private.pem"
+  ],
+  "allowed_samples": [
+    ".env.example",
+    "src/config.js",
+    "package-lock.json"
+  ]
+}

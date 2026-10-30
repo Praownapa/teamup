@@ -1,0 +1,31 @@
+{
+  "family": "teamup-frontend",
+  "requiresCompatibilities": ["FARGATE"],
+  "networkMode": "awsvpc",
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "teamup-frontend",
+      "image": "<ACCOUNT_ID>.dkr.ecr.ap-southeast-1.amazonaws.com/teamup-frontend:latest",
+      "essential": true,
+      "portMappings": [{ "containerPort": 80, "protocol": "tcp" }],
+      "environment": [
+        { "name": "API_BASE_URL", "value": "/api" },
+        { "name": "USE_MOCK", "value": "false" },
+        { "name": "COGNITO_USER_POOL_ID", "value": "ap-southeast-1_XXXXXXXXX" },
+        { "name": "COGNITO_CLIENT_ID", "value": "xxxxxxxxxxxxxxxxxxxxxxxxxx" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/teamup-frontend",
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "web",
+          "awslogs-create-group": "true"
+        }
+      }
+    }
+  ]
+}

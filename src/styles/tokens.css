@@ -1,0 +1,39 @@
+/* Design tokens: Navy + blue dashboard theme */
+:root {
+  --brand-900: #0b1530;
+  --brand-700: #1e3a8a;
+  --brand-600: #1d4ed8;
+  --brand-500: #3b82f6;
+  --brand-200: #bfdbfe;
+  --brand-100: #dbeafe;
+  --brand-50: #eff6ff;
+  --accent: #6366f1;
+  --accent-soft: #a5b4fc;
+  --orange: #f59e0b;
+
+  --grad-primary: linear-gradient(180deg, #1e40af, #1e3a8a);
+  --grad-sidebar: linear-gradient(180deg, #111c3a 0%, #0b1530 100%);
+  --grad-hero: linear-gradient(110deg, #1e3a8a 0%, #2563eb 45%, #60a5fa 100%);
+  --grad-bar: linear-gradient(90deg, #1e3a8a, #60a5fa);
+  --grad-cta: linear-gradient(90deg, #ffffff, #e0f2fe);
+
+  --bg: #eef2f8;
+  --canvas: #eef2f8;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --text-2: #334155;
+  --muted: #64748b;
+  --faint: #94a3b8;
+  --border: #e2e8f0;
+  --line: #e8edf3;
+
+  --ok-bg: #dcfce7;  --ok: #15803d;
+  --warn-bg: #fef3c7; --warn: #b45309;
+  --bad-bg: #fee2e2;  --bad: #b91c1c;
+  --info-bg: #e0e7ff; --info: #4338ca;
+
+  --r-sm: 8px; --r-md: 10px; --r-lg: 14px; --r-xl: 20px; --r-pill: 999px;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 6px 18px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 18px 40px rgba(30, 58, 138, 0.25);
+  --font: 'Inter', system-ui, sans-serif;
+}
