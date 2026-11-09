@@ -70,3 +70,18 @@ def make_user(db, email, *, name=None, major="", year=1, skills=(), role="studen
         db.execute("INSERT INTO user_skills (user_id, name, level, position) VALUES (%s, %s, 'Intermediate', %s)",
                    (row["id"], skill, i))
     return row["id"]
+
+
+VALID_PROJECT = {
+    "title": "Test Project", "description": "A test project.", "category": "Course Project", "course": "",
+    "cover_url": "", "skills": ["React", "Python"], "owner_role": "Lead",
+    "roles": [{"name": "Frontend Developer", "spots": 1}, {"name": "Backend Developer", "spots": 1}],
+    "max_size": 4, "deadline": "", "duration": "", "meeting": "", "accepting": True,
+}
+
+
+def new_project(owner: Api, **overrides) -> dict:
+    """Create a project through the API as `owner` and return its view."""
+    r = owner.post("/projects", json={**VALID_PROJECT, **overrides})
+    assert r.status_code == 201, r.text
+    return r.json()
