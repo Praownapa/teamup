@@ -229,6 +229,13 @@ export function CreateProject() {
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const set = (k, v) => setF((x) => ({ ...x, [k]: v }));
+  // Categories come from the server (admins can add/remove them); the built-in list is only a fallback.
+  const catOpts = useAsync(() => api.listFilterOptions());
+  const categories = catOpts.data?.categories?.map((c) => c.name) || CATEGORIES;
+  useEffect(() => {
+    if (categories.length && !categories.includes(f.category)) set('category', categories[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories.join('\n')]);
   const spots = f.roles.filter((r) => r.name.trim()).reduce((a, r) => a + Number(r.spots || 1), 0) + 1;
   const addSkill = () => { const s = skill.trim(); if (s && !f.skills.includes(s)) set('skills', [...f.skills, s]); setSkill(''); };
 
@@ -266,7 +273,7 @@ export function CreateProject() {
             <div className="field"><label className="lbl">Project title *</label><input className="input" required maxLength={80} value={f.title} onChange={(e) => set('title', e.target.value)} /><span className="hint">{f.title.length} / 80 characters</span></div>
             <div className="field"><label className="lbl">Description *</label><textarea className="textarea" required maxLength={2000} value={f.description} onChange={(e) => set('description', e.target.value)} placeholder="What are you building, why, and how will the team work?" /></div>
             <div className="grid g2" style={{ gap: 14 }}>
-              <div className="field"><label className="lbl">Category *</label><select className="select" value={f.category} onChange={(e) => set('category', e.target.value)}>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select></div>
+              <div className="field"><label className="lbl">Category *</label><select className="select" value={f.category} onChange={(e) => set('category', e.target.value)}>{categories.map((c) => <option key={c}>{c}</option>)}</select></div>
               <div className="field"><label className="lbl">Course / event</label><input className="input" value={f.course} onChange={(e) => set('course', e.target.value)} placeholder="e.g. DES424 Cloud-based App Dev" /></div>
             </div>
             <div className="field"><label className="lbl">Cover image</label>
