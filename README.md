@@ -17,6 +17,16 @@ Open http://localhost:5173. Without local configuration the app uses mock data. 
 
 `npm ci` reproduces the included lockfile. Commit `package-lock.json`; do not replace it with a freshly resolved dependency set without review.
 
+## Run with the real backend (local, no AWS needed)
+
+The FastAPI + PostgreSQL backend lives in [`backend/`](backend/README.md). Use three terminals:
+
+1. Database: `cd backend` and `docker compose up -d db pgadmin` (PostgreSQL on port 5434, pgAdmin on http://localhost:5050).
+2. API: in `backend/`, run `.venv\Scripts\python -m uvicorn app.main:app --reload --port 8000 --env-file .env`. Setup is in [backend/README.md](backend/README.md). Swagger is at http://localhost:8000/api/docs.
+3. Website: create `.env.local` with `VITE_USE_MOCK=false`, `VITE_AUTH_MODE=local` and `VITE_API_BASE_URL=/api`, then run `npm run dev`.
+
+`VITE_AUTH_MODE=local` skips Cognito: any email and password signs in, and the backend (running with `AUTH_MODE=dev`) creates or loads that student. Demo logins include `john.carter@student.uni.ac.th` (admin). Use `VITE_AUTH_MODE=cognito` (the default) with a real user pool; the deployed site always uses Cognito.
+
 ## Configuration and switching to the real API
 
 Priority: **explicit `window.__CONFIG__` runtime value > Vite `VITE_*` build value > default**. `public/config.js` is intentionally `{}` for local development. Default API base is `/api`, default local mock mode is true. Boolean values must be true/false; invalid mock settings fail rather than silently selecting another mode. API base trailing slashes are removed.
@@ -51,7 +61,7 @@ All `VITE_*` values, runtime config and frontend bundles are public. User Pool I
 
 ## Project map
 
-`src/pages/` contains auth, dashboard, projects, teams and account/admin pages. `src/auth/` wraps Amplify and session/profile state. `src/api/` contains real/mock selection and HTTP errors. `src/utils/` contains loading, uploads, password and date helpers. `src/components/` and `src/styles/` contain UI and styling. `tests/` contains regression tests. `deploy/` contains templates, not a provisioned AWS environment.
+`src/pages/` contains auth, dashboard, projects, teams and account/admin pages. `src/auth/` wraps Amplify and session/profile state. `src/api/` contains real/mock selection and HTTP errors. `src/utils/` contains loading, uploads, password and date helpers. `src/components/` and `src/styles/` contain UI and styling. `tests/` contains regression tests. `deploy/` contains templates, not a provisioned AWS environment. `backend/` contains the FastAPI API, database migrations, demo data and its pytest suite (see [backend/README.md](backend/README.md)).
 
 ## Docker and deployment
 
