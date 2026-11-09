@@ -9,12 +9,15 @@ from pathlib import Path
 from typing import Iterator
 
 import psycopg
+from psycopg import sql
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 MIGRATIONS_DIR = BACKEND_DIR / "migrations"
-MIGRATION_LOCK_ID = 424242  # any constant; makes two app instances take turns running migrations
+SEED_FILE = BACKEND_DIR / "seed" / "demo.sql"
+MIGRATION_LOCK_ID = 424242  # any constants; they make two app instances take turns migrating / seeding
+SEED_LOCK_ID = 424243
 
 _pool: ConnectionPool | None = None
 
@@ -64,3 +67,19 @@ def run_migrations(conn: psycopg.Connection, migrations_dir: Path = MIGRATIONS_D
             conn.execute("INSERT INTO schema_migrations (version) VALUES (%s)", (path.name,))
             applied_now.append(path.name)
     return applied_now
+
+
+def seed_demo(conn: psycopg.Connection, force: bool = False) -> bool:
+    """Load seed/demo.sql. Without `force` it does nothing (returns False) if any user exists.
+    With `force` it first DELETES ALL DATA (every table except schema_migrations)."""
+    with conn.transaction():
+        conn.execute("SELECT pg_advisory_xact_lock(%s)", (SEED_LOCK_ID,))
+        if force:
+            tables = [r["tablename"] for r in conn.execute(
+                "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> 'schema_migrations'")]
+            conn.execute(sql.SQL("TRUNCATE {} RESTART IDENTITY CASCADE").format(
+                sql.SQL(", ").join(map(sql.Identifier, tables))))
+        elif conn.execute("SELECT EXISTS (SELECT 1 FROM users) AS has_users").fetchone()["has_users"]:
+            return False
+        conn.execute(SEED_FILE.read_text(encoding="utf-8"))
+    return True

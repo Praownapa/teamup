@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from .config import get_settings
-from .db import close_pool, get_pool, open_pool, run_migrations
+from .db import close_pool, get_pool, open_pool, run_migrations, seed_demo
 from .routers import admin, notifications, projects, requests, search, teams, uploads, users
 
 log = logging.getLogger("uvicorn.error")
@@ -33,8 +33,11 @@ async def lifespan(app: FastAPI):
     open_pool(settings.database_url)
     with get_pool().connection() as conn:
         applied = run_migrations(conn)
+        seeded = settings.seed_demo_data and seed_demo(conn)  # only loads into an empty database
     if applied:
         log.info("Applied migrations: %s", ", ".join(applied))
+    if seeded:
+        log.info("Loaded the demo data (SEED_DEMO_DATA=true).")
     if settings.auth_mode == "dev":
         log.warning("AUTH_MODE=dev: test tokens like 'dev:<email>' are accepted. Never use this mode in AWS.")
     try:
