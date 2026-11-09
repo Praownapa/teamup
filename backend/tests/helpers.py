@@ -33,3 +33,17 @@ class Api:
 
     def delete(self, path, **kw):
         return self._call("DELETE", path, **kw)
+
+
+def make_user(db, email, *, name=None, major="", year=1, skills=(), role="student", status="active",
+              open_to_projects=True) -> int:
+    """Insert a user directly with SQL (skills at level Intermediate) and return the id."""
+    row = db.execute(
+        "INSERT INTO users (email, name, major, year, role, status, open_to_projects) "
+        "VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id",
+        (email.lower(), email.split("@")[0] if name is None else name, major, year, role, status, open_to_projects),
+    ).fetchone()
+    for i, skill in enumerate(skills):
+        db.execute("INSERT INTO user_skills (user_id, name, level, position) VALUES (%s, %s, 'Intermediate', %s)",
+                   (row["id"], skill, i))
+    return row["id"]
