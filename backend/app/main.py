@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from .config import get_settings
+from .config import check_settings, get_settings
 from .db import close_pool, get_pool, open_pool, run_migrations, seed_demo
 from .routers import admin, notifications, projects, requests, search, teams, uploads, users
 
@@ -30,6 +30,9 @@ TAGS = [
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = get_settings()
+    problems = check_settings(settings)
+    if problems:  # fail fast at startup: a misconfigured API would otherwise reject every login silently
+        raise RuntimeError("Configuration error: " + " ".join(problems))
     open_pool(settings.database_url)
     with get_pool().connection() as conn:
         applied = run_migrations(conn)

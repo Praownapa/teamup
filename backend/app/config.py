@@ -52,6 +52,17 @@ def load_settings(env: Mapping[str, str] | None = None) -> Settings:
     )
 
 
+def check_settings(settings: Settings) -> list[str]:
+    """Problems that would make the running API fail in confusing ways (e.g. every login rejected)."""
+    problems = []
+    if settings.auth_mode == "cognito" and not (
+            settings.cognito_region and settings.cognito_user_pool_id and settings.cognito_client_id):
+        problems.append("AUTH_MODE=cognito needs COGNITO_REGION, COGNITO_USER_POOL_ID and COGNITO_CLIENT_ID.")
+    if settings.upload_mode == "s3" and not (settings.s3_bucket and settings.s3_region):
+        problems.append("UPLOAD_MODE=s3 needs S3_BUCKET and S3_REGION.")
+    return problems
+
+
 @lru_cache
 def get_settings() -> Settings:
     return load_settings()

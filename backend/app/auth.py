@@ -109,9 +109,9 @@ def user_for_cognito(conn: psycopg.Connection, claims: dict, token: str, setting
         if not email:
             raise HTTPException(502, "Could not load your profile from Cognito.")
         if attrs.get("email_verified") == "true":
-            # A profile created earlier with this (verified) email but no Cognito link: claim it.
-            row = conn.execute("UPDATE users SET cognito_sub = %s WHERE email = %s AND cognito_sub IS NULL RETURNING *",
-                               (sub, email)).fetchone()
+            # Cognito has verified this person owns the email, so a profile with that email is theirs:
+            # one created before Cognito (demo/dev), or one whose Cognito account was deleted and re-created.
+            row = conn.execute("UPDATE users SET cognito_sub = %s WHERE email = %s RETURNING *", (sub, email)).fetchone()
         if row is None:
             conn.execute(
                 "INSERT INTO users (cognito_sub, email, name, student_id, major) VALUES (%s, %s, %s, %s, %s) "

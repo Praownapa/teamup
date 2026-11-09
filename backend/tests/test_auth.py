@@ -153,3 +153,21 @@ def test_fetch_cognito_attributes_sends_a_get_user_request(monkeypatch):
         server.server_close()
     assert seen == {"target": "AWSCognitoIdentityProviderService.GetUser", "type": "application/x-amz-json-1.1",
                     "body": {"AccessToken": "tok-123"}}
+
+
+def test_cognito_relinks_a_recreated_account_by_verified_email(db, whoami, cognito_env):
+    uid = make_user(db, "again@x.test")
+    db.execute("UPDATE users SET cognito_sub = 'old-sub' WHERE id = %s", (uid,))
+    cognito_env.attrs = {"email": "again@x.test", "email_verified": "true"}
+    r = whoami.get("/whoami", headers=bearer(make_access_token("new-sub")))
+    assert r.status_code == 200 and r.json()["id"] == uid
+    assert db.execute("SELECT cognito_sub FROM users WHERE id = %s", (uid,)).fetchone()["cognito_sub"] == "new-sub"
+
+
+def test_cognito_unverified_email_cannot_take_over_a_profile(db, whoami, cognito_env):
+    uid = make_user(db, "taken@x.test")
+    db.execute("UPDATE users SET cognito_sub = 'owner-sub' WHERE id = %s", (uid,))
+    cognito_env.attrs = {"email": "taken@x.test", "email_verified": "false"}
+    r = whoami.get("/whoami", headers=bearer(make_access_token("intruder-sub")))
+    assert r.status_code == 409 and r.json()["detail"] == "An account with this email already exists."
+    assert db.execute("SELECT cognito_sub FROM users WHERE id = %s", (uid,)).fetchone()["cognito_sub"] == "owner-sub"

@@ -82,6 +82,8 @@ ORDER BY p.id, r.position;
 | `S3_BUCKET`, `S3_REGION`, `PUBLIC_FILE_BASE_URL` | Where cover images go and how they are read back | — | required for `s3` |
 | `SEED_DEMO_DATA` | Load the demo data at startup if the database is empty | `true` | as wanted |
 
+If `AUTH_MODE=cognito` or `UPLOAD_MODE=s3` is missing any of its settings, the API refuses to start and logs which variables are missing. Otherwise every login would just be rejected without explanation.
+
 ## Tests
 
 ```powershell
