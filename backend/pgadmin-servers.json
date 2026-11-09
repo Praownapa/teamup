@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "TeamUp (local)",
+      "Group": "Servers",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "teamup",
+      "Username": "teamup",
+      "SSLMode": "prefer"
+    }
+  }
+}
