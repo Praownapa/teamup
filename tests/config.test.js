@@ -12,6 +12,12 @@ describe('configuration precedence', () => {
     expect(resolveConfig({ USE_MOCK: ' FALSE ' }).useMock).toBe(false);
     expect(() => resolveConfig({ USE_MOCK: 'flase' })).toThrow();
   });
+  it('defaults auth to cognito and reads local', () => {
+    expect(resolveConfig().authMode).toBe('cognito');
+    expect(resolveConfig({}, { VITE_AUTH_MODE: ' Local ' }).authMode).toBe('local');
+    expect(resolveConfig({ AUTH_MODE: 'cognito' }, { VITE_AUTH_MODE: 'local' }).authMode).toBe('cognito');
+    expect(() => resolveConfig({}, { VITE_AUTH_MODE: 'magic' })).toThrow('AUTH_MODE must be cognito or local.');
+  });
   it('uses runtime URL and IDs, removes trailing slash', () => expect(resolveConfig({ API_BASE_URL: 'https://example.test/api/', COGNITO_USER_POOL_ID: 'runtime', COGNITO_CLIENT_ID: 'client' }, { VITE_API_BASE_URL: '/env' })).toMatchObject({ apiBaseUrl: 'https://example.test/api', cognito: { userPoolId: 'runtime', userPoolClientId: 'client' } }));
 });
 describe('error display', () => {
