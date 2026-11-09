@@ -85,3 +85,11 @@ def new_project(owner: Api, **overrides) -> dict:
     r = owner.post("/projects", json={**VALID_PROJECT, **overrides})
     assert r.status_code == 201, r.text
     return r.json()
+
+
+def add_member(owner: Api, member: Api, project_id: int, role: str) -> None:
+    """`member` asks to join as `role` and `owner` accepts."""
+    r = member.post(f"/projects/{project_id}/requests", json={"role": role})
+    assert r.status_code == 200, r.text
+    r = owner.patch(f"/requests/{r.json()['my_request']['id']}", json={"status": "accepted"})
+    assert r.status_code == 200, r.text

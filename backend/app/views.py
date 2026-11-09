@@ -134,6 +134,47 @@ def project_view(conn: psycopg.Connection, viewer_id: int, project_id: int) -> d
     return views[0]
 
 
+# ---------------------------------------------------------------- join requests and invitations
+def request_views(conn: psycopg.Connection, viewer_id: int, request_ids: list[int]) -> list[dict]:
+    """Requests/invitations as seen by `viewer_id`, in the order of `request_ids`.
+
+    `kind` says what it is (request or invitation); `type` says how it relates to the viewer:
+    an invitation is "invitation" for the invited student and "sent" for the inviter; a join request
+    is "sent" for the student who asked and "received" for the project owner.
+    """
+    ids = list(request_ids)
+    if not ids:
+        return []
+    rows = conn.execute("""
+        SELECT r.*, p.title AS project_title, p.max_size - s.member_count AS open_spots,
+               st.name AS student_name, st.major AS student_major, st.year AS student_year,
+               b.name AS by_name, b.major AS by_major, b.year AS by_year,
+               match_score(r.project_id, r.user_id) AS match
+        FROM requests r
+        JOIN projects p ON p.id = r.project_id
+        JOIN project_summary s ON s.project_id = r.project_id
+        JOIN users st ON st.id = r.user_id
+        LEFT JOIN users b ON b.id = r.by_id
+        WHERE r.id = ANY(%s)""", (ids,)).fetchall()
+    views = {}
+    for r in rows:
+        is_student = r["user_id"] == viewer_id
+        if r["kind"] == "invitation":
+            perspective = "invitation" if is_student else "sent"
+        else:
+            perspective = "sent" if is_student else "received"
+        views[r["id"]] = {
+            "id": r["id"], "type": perspective, "kind": r["kind"], "status": r["status"], "role": r["role"],
+            "message": r["message"], "created_at": iso(r["created_at"]),
+            "project": {"id": r["project_id"], "title": r["project_title"], "open_spots": r["open_spots"]},
+            "student": {"id": r["user_id"], "name": r["student_name"], "major": r["student_major"], "year": r["student_year"]},
+            "by": ({"id": r["by_id"], "name": r["by_name"], "major": r["by_major"], "year": r["by_year"]}
+                   if r["by_id"] is not None else None),
+            "match": r["match"],
+        }
+    return [views[i] for i in ids if i in views]
+
+
 # ---------------------------------------------------------------- people and notifications
 def notification_view(row: dict) -> dict:
     return {"id": row["id"], "kind": row["kind"], "text": row["text"], "created_at": iso(row["created_at"]),

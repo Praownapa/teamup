@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 
 from .config import get_settings
 from .db import close_pool, get_pool, open_pool, run_migrations
-from .routers import projects, search, users
+from .routers import notifications, projects, requests, search, users
 
 log = logging.getLogger("uvicorn.error")
 
@@ -58,7 +58,7 @@ def create_app() -> FastAPI:
         return {"status": "ok", "database": "ok"}
 
     # Order matters where paths overlap (e.g. /projects/filters must come before /projects/{project_id}).
-    for module in (users, search, projects):
+    for module in (users, search, projects, requests, notifications):
         app.include_router(module.router, prefix="/api")
     return app
 
