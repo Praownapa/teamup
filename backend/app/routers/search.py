@@ -70,21 +70,25 @@ def list_projects(q: str = "", categories: str = "", skills: str = "", role: str
     return project_views(conn, user["id"], ids)
 
 
-@router.get("/projects/filters", summary="Options for the Explore filters")
-def list_filter_options(user: dict = Depends(current_user), conn: psycopg.Connection = Depends(get_conn)):
-    categories = conn.execute("""
+def category_counts(conn: psycopg.Connection) -> list[dict]:
+    """Every category (in the order they were added) with its number of projects. Also used by Admin."""
+    rows = conn.execute("""
         SELECT c.name, count(p.id) AS count
         FROM categories c
         LEFT JOIN projects p ON p.category = c.name AND p.removed_at IS NULL
         GROUP BY c.name, c.created_at
-        ORDER BY c.created_at, c.name""").fetchall()
+        ORDER BY c.created_at, c.name""")
+    return [{"name": r["name"], "count": r["count"]} for r in rows]
+
+
+@router.get("/projects/filters", summary="Options for the Explore filters")
+def list_filter_options(user: dict = Depends(current_user), conn: psycopg.Connection = Depends(get_conn)):
     roles = conn.execute("""
         SELECT DISTINCT r.name
         FROM project_roles r JOIN projects p ON p.id = r.project_id
         WHERE r.user_id IS NULL AND p.removed_at IS NULL
         ORDER BY r.name""").fetchall()
-    return {"categories": [{"name": c["name"], "count": c["count"]} for c in categories],
-            "roles": [r["name"] for r in roles]}
+    return {"categories": category_counts(conn), "roles": [r["name"] for r in roles]}
 
 
 @router.get("/projects/{project_id}/recommendations", summary="Students recommended for my project (owner only)")
