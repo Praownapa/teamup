@@ -11,23 +11,18 @@ FastAPI notes for readers new to it:
 from __future__ import annotations
 
 from datetime import date
-from typing import Annotated
 
 import psycopg
 from fastapi import APIRouter, Depends, HTTPException
 from psycopg import sql
-from pydantic import BaseModel, Field, StringConstraints, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from ..auth import current_user
 from ..db import get_conn
+from ..fields import Text
 from ..views import dedupe_by_name, get_visible_project, project_view
 
 router = APIRouter(tags=["Projects"])
-
-
-def Text(max_length: int, min_length: int = 0):
-    """A string with surrounding spaces removed and a length limit."""
-    return Annotated[str, StringConstraints(strip_whitespace=True, min_length=min_length, max_length=max_length)]
 
 
 def _check_deadline(value: str | None) -> str | None:

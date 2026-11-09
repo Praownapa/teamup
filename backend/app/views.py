@@ -132,3 +132,54 @@ def project_view(conn: psycopg.Connection, viewer_id: int, project_id: int) -> d
     if not views:
         raise HTTPException(404, "Project not found.")
     return views[0]
+
+
+# ---------------------------------------------------------------- people and notifications
+def notification_view(row: dict) -> dict:
+    return {"id": row["id"], "kind": row["kind"], "text": row["text"], "created_at": iso(row["created_at"]),
+            "unread": row["unread"], "request_id": row["request_id"]}
+
+
+def _skills_and_interests(conn: psycopg.Connection, user_id: int) -> tuple[list[dict], list[str]]:
+    skills = [{"name": r["name"], "level": r["level"]} for r in conn.execute(
+        "SELECT name, level FROM user_skills WHERE user_id = %s ORDER BY position", (user_id,))]
+    interests = [r["name"] for r in conn.execute(
+        "SELECT name FROM user_interests WHERE user_id = %s ORDER BY position", (user_id,))]
+    return skills, interests
+
+
+def user_team_rows(conn: psycopg.Connection, user_id: int) -> list[dict]:
+    """Non-removed projects where the user holds a place (owned or joined), newest first."""
+    return conn.execute("""
+        SELECT p.id, p.title, p.owner_id = %(uid)s AS is_owner, s.status
+        FROM project_roles r
+        JOIN projects p ON p.id = r.project_id
+        JOIN project_summary s ON s.project_id = p.id
+        WHERE r.user_id = %(uid)s AND p.removed_at IS NULL
+        ORDER BY p.created_at DESC, p.id DESC""", {"uid": user_id}).fetchall()
+
+
+def me_view(conn: psycopg.Connection, user_id: int) -> dict:
+    """The signed-in user's own profile (includes private fields like email and student ID)."""
+    u = conn.execute("SELECT * FROM users WHERE id = %s", (user_id,)).fetchone()
+    skills, interests = _skills_and_interests(conn, user_id)
+    teams = user_team_rows(conn, user_id)
+    return {
+        "id": u["id"], "name": u["name"], "email": u["email"], "student_id": u["student_id"], "major": u["major"],
+        "year": u["year"], "role": u["role"], "status": u["status"], "bio": u["bio"], "portfolio": u["portfolio"],
+        "open_to_projects": u["open_to_projects"], "skills": skills, "interests": interests,
+        "notify": {"invitations": u["notify_invitations"], "requests": u["notify_requests"],
+                   "team": u["notify_team"], "digest": u["notify_digest"]},
+        "teams": [{"id": t["id"], "title": t["title"], "is_owner": t["is_owner"], "status": t["status"]} for t in teams],
+        "stats": {"teams": len(teams), "projects": sum(1 for t in teams if t["is_owner"]), "skills": len(skills)},
+    }
+
+
+def public_user_view(conn: psycopg.Connection, user_id: int) -> dict:
+    """What other students see: no email or student ID."""
+    u = conn.execute("SELECT id, name, major, year, bio FROM users WHERE id = %s", (user_id,)).fetchone()
+    if u is None:
+        raise HTTPException(404, "Student not found.")
+    skills, interests = _skills_and_interests(conn, user_id)
+    return {**brief(u), "bio": u["bio"], "skills": skills, "interests": interests,
+            "teams": [{"id": t["id"], "title": t["title"]} for t in user_team_rows(conn, user_id)]}
