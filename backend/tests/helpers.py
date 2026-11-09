@@ -1,7 +1,30 @@
 """Helpers shared by the test modules (conftest imports TEST_DATABASE_URL from here)."""
 import os
+import time
+
+import jwt
+from cryptography.hazmat.primitives.asymmetric import rsa
 
 TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "postgresql://teamup:teamup@localhost:5434/teamup_test")
+
+# A fake Cognito user pool for the cognito-mode tests: tokens are signed with this throwaway key pair.
+TEST_REGION = "ap-southeast-1"
+TEST_POOL_ID = "ap-southeast-1_TEST"
+TEST_ISSUER = f"https://cognito-idp.{TEST_REGION}.amazonaws.com/{TEST_POOL_ID}"
+TEST_CLIENT_ID = "client123"
+TEST_PRIVATE_KEY = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+TEST_PUBLIC_KEY = TEST_PRIVATE_KEY.public_key()
+
+
+def make_access_token(sub: str, groups=(), **overrides) -> str:
+    """A Cognito-style access token; override any claim (client_id, token_use, exp, iss...)."""
+    now = int(time.time())
+    claims = {"sub": sub, "iss": TEST_ISSUER, "client_id": TEST_CLIENT_ID, "token_use": "access",
+              "scope": "aws.cognito.signin.user.admin", "username": sub, "iat": now, "exp": now + 3600}
+    if groups:
+        claims["cognito:groups"] = list(groups)
+    claims.update(overrides)
+    return jwt.encode(claims, TEST_PRIVATE_KEY, algorithm="RS256", headers={"kid": "test-key"})
 
 
 def bearer(token: str) -> dict:
