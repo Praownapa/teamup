@@ -1,0 +1,5 @@
+# Tools for the offline template checks (run: infra/.venv/Scripts/python -m pytest infra -q).
+# The deployed app doesn't use these.
+cfn-lint==1.60.1
+pytest==9.2.0
+PyYAML==6.0.3
