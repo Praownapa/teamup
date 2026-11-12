@@ -34,14 +34,13 @@ deploy_stack "$PREFIX-data" infra/templates/data.yaml \
   "PrivateSubnetIds=$(net_out PrivateSubnetIds)" "DatabaseSecurityGroupId=$(net_out DatabaseSecurityGroupId)"
 
 step "4/8 Building and pushing the backend and website images ($TAG)"
-REGISTRY="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
-awsr ecr get-login-password | docker login --username AWS --password-stdin "$REGISTRY"
+ecr_login "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
 BACKEND_IMAGE="$(data_out BackendRepositoryUri):$TAG"
 FRONTEND_IMAGE="$(data_out FrontendRepositoryUri):$TAG"
 docker build --platform linux/amd64 -t "$BACKEND_IMAGE" backend
 docker build --platform linux/amd64 -t "$FRONTEND_IMAGE" .
-docker push "$BACKEND_IMAGE"
-docker push "$FRONTEND_IMAGE"
+ecr_docker push "$BACKEND_IMAGE"
+ecr_docker push "$FRONTEND_IMAGE"
 
 step "5/8 App stack (the first run takes about 10 minutes: CloudFront is slow to create)"
 deploy_stack "$PREFIX-app" infra/templates/app.yaml \

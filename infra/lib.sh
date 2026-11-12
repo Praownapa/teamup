@@ -58,6 +58,32 @@ require_login() {
   fi
 }
 
+# ECR's login password is about 2.6 KB with aws login's temporary credentials: more than Windows Credential
+# Manager can hold (2,560 bytes), so Docker Desktop's credential store fails with "The stub received bad
+# data". On Windows the login therefore goes into a throwaway Docker config: with no credential helper on
+# PATH, Docker keeps it in that folder's config.json (it warns that it's unencrypted), and the folder is
+# deleted when the script exits. Elsewhere the normal docker login is used.
+ecr_login() {  # ecr_login REGISTRY
+  if command -v cygpath >/dev/null 2>&1; then
+    ECR_DOCKER_CONFIG="$(mktemp -d)"
+    trap 'rm -rf "$ECR_DOCKER_CONFIG"' EXIT
+    echo '{}' > "$ECR_DOCKER_CONFIG/config.json"
+    ECR_DOCKER_HOST="$(docker context inspect --format '{{.Endpoints.docker.Host}}')"  # the same Docker engine
+    ECR_DOCKER_EXE="$(dirname "$(command -v docker)")/docker.exe"
+    echo "(The ECR login is kept in a temporary folder that is deleted when this script ends.)"
+  fi
+  awsr ecr get-login-password | ecr_docker login --username AWS --password-stdin "$1"
+}
+
+ecr_docker() {  # docker, with the ECR login from ecr_login (use it for push)
+  if [ -n "${ECR_DOCKER_CONFIG:-}" ]; then
+    PATH="/usr/bin:/bin" DOCKER_CONFIG="$(cygpath -w "$ECR_DOCKER_CONFIG")" DOCKER_HOST="$ECR_DOCKER_HOST" \
+      "$ECR_DOCKER_EXE" "$@"
+  else
+    docker "$@"
+  fi
+}
+
 require_docker() {
   if ! docker info >/dev/null 2>&1; then
     echo "Docker isn't running: start Docker Desktop, then re-run." >&2
