@@ -63,14 +63,73 @@ All `VITE_*` values, runtime config and frontend bundles are public. User Pool I
 
 `src/pages/` contains auth, dashboard, projects, teams and account/admin pages. `src/auth/` wraps Amplify and session/profile state. `src/api/` contains real/mock selection and HTTP errors. `src/utils/` contains loading, uploads, password and date helpers. `src/components/` and `src/styles/` contain UI and styling. `tests/` contains regression tests. `deploy/` contains templates, not a provisioned AWS environment. `backend/` contains the FastAPI API, database migrations, demo data and its pytest suite (see [backend/README.md](backend/README.md)).
 
+## Deployed on AWS
+
+TeamUp runs in the instructor's AWS account, which the whole class shares, in **Tokyo (`ap-northeast-1`)**:
+**https://d2u84idlq1gpr5.cloudfront.net**. Everything is defined in [`infra/`](infra/) (CloudFormation templates and bash scripts), and every resource is named `des424-126-g07-teamup-*` and tagged `project=teamup`.
+
+```
+Browser
+  ├─HTTPS─► CloudFront  https://d2u84idlq1gpr5.cloudfront.net
+  │           ├─ /covers/*        ─► S3 bucket (private; readable only through CloudFront)
+  │           └─ everything else  ─HTTP─► ALB (public subnets; accepts only our CloudFront)
+  │                                         ├─ /api/*  ─► backend (ECS Fargate, FastAPI :8000) ─► RDS PostgreSQL 17 (private subnets)
+  │                                         └─ other   ─► website (ECS Fargate, nginx :80)
+  ├─HTTPS─► Cognito user pool (sign-up, sign-in, email codes, tokens)
+  └─HTTPS─► S3 presigned PUT (cover upload; the backend hands out the URL)
+```
+
+| Stack | What it holds |
+|---|---|
+| `des424-126-g07-teamup-network` | TeamUp's own VPC: two public subnets (load balancer and containers), two private subnets (the database only, no route to the internet) and the firewall rules. No NAT gateway. |
+| `des424-126-g07-teamup-data` | RDS PostgreSQL 17 with its generated password in Secrets Manager, the cover-image bucket, the Cognito user pool with its `admin` group, and the two image repositories (ECR). A stack policy stops any update from replacing them. |
+| `des424-126-g07-teamup-app` | The ECS cluster with the backend and website services, the load balancer, CloudFront, the IAM roles and the logs. |
+
+**Demo logins.** Every demo student in `backend/seed/demo.sql` has a Cognito login, and they all share one password. It's kept in AWS Systems Manager → Parameter Store (Tokyo) → `/des424-126-g07-teamup/demo-password` (click *Show decrypted value*), never in git. `john.carter@student.uni.ac.th` is the admin and `jack.scott@student.uni.ac.th` is suspended. Real sign-ups work too: Cognito emails a code.
+
+**Commands.** Run these from the repository root in Git Bash, after signing in with `aws login --profile teamup` in PowerShell.
+
+| Command | What it does |
+|---|---|
+| `bash infra/deploy.sh` | Creates or updates everything: the three stacks, both images (tagged with the git commit) and the demo accounts. Then it runs the smoke test. It needs Docker Desktop and a clean git tree, and it's safe to re-run. |
+| `bash infra/smoke-test.sh` | 13 live checks of the deployed site (the deploy runs it too). |
+| `bash infra/reset-demo-data.sh --yes` | Deletes all app data online and loads the demo data again, for example before the presentation. Cognito logins stay. |
+| `bash infra/delete.sh` | A dry run that lists everything that would be deleted. `--really-delete` deletes it all, including the database (no copy is kept). |
+| `infra/.venv/Scripts/python -m pytest infra -q` | Offline checks of the templates' security, cost and naming rules, plus cfn-lint. Set it up once with `python -m venv infra/.venv` and `infra/.venv/Scripts/python -m pip install -r infra/requirements-dev.txt`. |
+
+**Where to find it in the AWS console.** Switch the region (top right) to **Asia Pacific (Tokyo)**. In Singapore you'd only see other groups' resources. Then:
+
+- **CloudFormation → Stacks:** each stack's *Resources* tab links to everything it created.
+- **ECS → Clusters → `des424-126-g07-teamup`:** the services, their tasks and their logs.
+- **RDS → Databases → `des424-126-g07-teamup-db`**.
+- **Cognito → User pools → `des424-126-g07-teamup-users`:** the users and the `admin` group.
+- **CloudFront:** the distribution "TeamUp (des424-126-g07)". CloudFront is global, so it shows in any region.
+- **VPC → Your VPCs → `des424-126-g07-teamup-vpc`**.
+- **S3 → `des424-126-g07-teamup-covers-528301714999`**.
+- **Resource Groups & Tag Editor:** search for the tag `project=teamup` to see every resource at once.
+
+**Security.**
+- The database accepts connections only from the backend containers and has no route to the internet.
+- The load balancer only answers requests that come through our CloudFront.
+- The deployed website always signs in with Cognito, and the backend runs `AUTH_MODE=cognito`, so dev tokens are rejected.
+- The database and demo passwords are generated, and live only in Secrets Manager and Parameter Store.
+
+**Cost.** About $3 a day while it runs: the load balancer, two small Fargate tasks, the micro database, four public IPv4 addresses and one secret. CloudFront, S3, Cognito and the logs are nearly free at this size. The account's $200/month budget is shared by the whole class, so delete the setup when it's no longer needed.
+
+**Limitations.**
+- The 5 MB cover-image limit is only checked in the browser, because a presigned upload can't enforce it.
+- No email goes out through SES. Notifications are in-app. Cognito's built-in email sends the sign-up and password-reset codes, about 50 a day.
+
 ## Docker and deployment
+
+The deployed setup is in **Deployed on AWS** above. The `deploy/` files below are the earlier frontend-only templates from the handoff.
 
 ```sh
 docker build -t teamup-frontend .
 docker run --rm -p 8080:80 -e USE_MOCK=true teamup-frontend
 ```
 
-Docker is not available in the review environment; container build/start and AWS smoke tests remain pending. Build uses `npm ci` only (lockfile failures must be fixed, not silently bypassed). Shell files use LF via `.gitattributes`.
+At handoff, Docker wasn't available in the review environment, so the container build and the AWS smoke tests were still pending. Both now run through `infra/` (see Deployed on AWS). Build uses `npm ci` only (lockfile failures must be fixed, not silently bypassed). Shell files use LF via `.gitattributes`.
 
 For real ECS deployment: provision ECR/ECS, execution role, logging, networking/security groups, service/target group and HTTPS/ACM first. Replace placeholders in `deploy/task-definition.json`, register the task definition, create the service and configure ALB `/api/*` to the backend and the default rule to frontend; health path `/health`. Backend requests must keep the agreed `/api` prefix. `deploy/deploy.sh` builds/pushes both a timestamp/commit tag and `latest`, then forces an existing service deployment; it does not provision infrastructure or register a new revision. Its redeploy works only if the service points to the expected `latest` image. Prefer a separately reviewed immutable-tag task revision for production.
 
