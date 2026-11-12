@@ -74,7 +74,8 @@ ORDER BY p.id, r.position;
 
 | Variable | Meaning | Local (`.env`) | AWS |
 |---|---|---|---|
-| `DATABASE_URL` | PostgreSQL connection | `postgresql://teamup:teamup@localhost:5434/teamup` | RDS address (password from a secret) |
+| `DATABASE_URL` | PostgreSQL connection | `postgresql://teamup:teamup@localhost:5434/teamup` | not used (see `DB_*`) |
+| `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_SSLMODE` | Database connection in parts, used when `DATABASE_URL` is empty; any password characters work | — | RDS address; user and password from Secrets Manager; `require` |
 | `AUTH_MODE` | `cognito` (verify Cognito tokens) or `dev` (test tokens) | `dev` | `cognito` (the default) |
 | `COGNITO_REGION`, `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | The user pool whose tokens are accepted | — | required |
 | `UPLOAD_MODE` | `off`, `local` (files in `UPLOAD_DIR`) or `s3` | `local` | `s3` |
