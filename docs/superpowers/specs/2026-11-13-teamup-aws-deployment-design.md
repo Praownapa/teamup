@@ -1,6 +1,6 @@
 # TeamUp AWS Deployment: Design
 
-Date: 2026-11-13. Status: draft, waiting for approval.
+Date: 2026-11-13. Status: approved by the user on 2026-11-13. Plan: `docs/superpowers/plans/2026-11-13-teamup-aws-deployment.md`.
 Puts TeamUp online in the instructor's AWS account for the final presentation. Builds on the backend design (`2026-11-09-teamup-backend-design.md`) and its code on branch `feature/backend` (PR #1, not merged yet).
 
 ## Why
