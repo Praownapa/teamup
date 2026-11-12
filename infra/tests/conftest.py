@@ -47,6 +47,37 @@ def resources(template: dict, type_: str) -> dict[str, dict]:
     return {lid: res for lid, res in template.get("Resources", {}).items() if res.get("Type") == type_}
 
 
+_NAME_KEYS = ("Name", "Identifier", "Family")
+_REFERENCES = {"Ref", "Fn::GetAtt", "Fn::ImportValue", "Fn::Select"}
+
+
+def name_properties(template: dict, exempt: frozenset[str] = frozenset()) -> list[tuple[str, str, object]]:
+    """(logical ID, property, value) for every name a resource defines: top-level properties ending in
+    Name/Identifier/Family, plus CachePolicyConfig.Name and OriginAccessControlConfig.Name. References to
+    other resources (Ref, GetAtt, ...) are skipped: they name something defined elsewhere. Nested keys such
+    as container or environment-variable names aren't resource names and aren't included."""
+    found = []
+    for lid, res in template.get("Resources", {}).items():
+        props = res.get("Properties", {})
+        candidates = [(key, value) for key, value in props.items() if key.endswith(_NAME_KEYS) and key not in exempt]
+        for nested in ("CachePolicyConfig", "OriginAccessControlConfig"):
+            if "Name" in props.get(nested, {}):
+                candidates.append((f"{nested}.Name", props[nested]["Name"]))
+        for key, value in candidates:
+            if isinstance(value, dict) and set(value) & _REFERENCES:
+                continue
+            found.append((lid, key, value))
+    return found
+
+
+def sub_text(value: object) -> str:
+    """The template string of a Fn::Sub (short or list form), or '' for anything else."""
+    if isinstance(value, dict) and "Fn::Sub" in value:
+        sub = value["Fn::Sub"]
+        return sub if isinstance(sub, str) else sub[0]
+    return ""
+
+
 def cfn_lint(name: str) -> None:
     """cfn-lint must report no errors or warnings (exit code 8 means informational notes only)."""
     path = TEMPLATES / f"{name}.yaml"
