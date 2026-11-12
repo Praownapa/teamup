@@ -70,8 +70,17 @@ require_docker() {
 deploy_stack() {
   local stack="$1" template="$2"
   shift 2
-  local params=()
+  local params=() status
   if [ $# -gt 0 ]; then params=(--parameter-overrides "$@"); fi
+  # A stack whose very first create failed is left empty in ROLLBACK_COMPLETE and can't be updated:
+  # delete it (it holds no resources any more) so this run can create it again.
+  status=$(awsr cloudformation describe-stacks --stack-name "$stack" --query 'Stacks[0].StackStatus' \
+    --output text 2>/dev/null) || status=""
+  if [ "$status" = "ROLLBACK_COMPLETE" ]; then
+    echo "$stack failed to create on an earlier run and is empty; deleting it so it can be created again."
+    awsr cloudformation delete-stack --stack-name "$stack"
+    awsr cloudformation wait stack-delete-complete --stack-name "$stack"
+  fi
   awsr cloudformation deploy --stack-name "$stack" --template-file "$(native_path "$template")" \
     ${params[@]+"${params[@]}"} --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset \
     --tags project=teamup owner=des424-126-g07
