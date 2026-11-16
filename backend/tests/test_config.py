@@ -44,3 +44,32 @@ def test_startup_refuses_incomplete_configuration(monkeypatch):
     with pytest.raises(RuntimeError, match="AUTH_MODE=cognito needs"):
         with TestClient(main.create_app()):
             pass
+
+
+# In AWS the connection arrives in parts (DB_*): the password comes from Secrets Manager, and a
+# generated password can contain characters that would break a postgresql:// URL.
+PARTS = {"DB_HOST": "db.example.internal", "DB_NAME": "teamup", "DB_USER": "teamup",
+         "DB_PASSWORD": "p@ss:w/rd?#% 'q\\x", "DB_SSLMODE": "require"}
+
+
+def test_database_settings_from_parts():
+    from psycopg.conninfo import conninfo_to_dict
+    assert conninfo_to_dict(load_settings(PARTS).database_url) == {
+        "host": "db.example.internal", "port": "5432", "dbname": "teamup", "user": "teamup",
+        "password": "p@ss:w/rd?#% 'q\\x", "sslmode": "require"}
+
+
+def test_database_url_wins_over_parts():
+    assert load_settings({**PARTS, "DATABASE_URL": "postgresql://a:b@h/x"}).database_url == "postgresql://a:b@h/x"
+
+
+def test_db_host_needs_name_user_and_password():
+    with pytest.raises(ValueError, match="DB_HOST needs DB_NAME, DB_USER and DB_PASSWORD."):
+        load_settings({"DB_HOST": "h", "DB_NAME": "teamup", "DB_USER": "teamup"})
+
+
+def test_sslmode_is_optional():
+    from psycopg.conninfo import conninfo_to_dict
+    parts = {k: v for k, v in PARTS.items() if k != "DB_SSLMODE"}
+    info = conninfo_to_dict(load_settings(parts).database_url)
+    assert info["host"] == "db.example.internal" and "sslmode" not in info

@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Mapping
 
+from psycopg.conninfo import make_conninfo
+
 DEFAULT_DATABASE_URL = "postgresql://teamup:teamup@localhost:5434/teamup"
 
 
@@ -31,6 +33,28 @@ def _choice(value: str, allowed: tuple[str, ...], message: str) -> str:
     return value
 
 
+def _database_url(env: Mapping[str, str]) -> str:
+    """DATABASE_URL when it is set (local development). In AWS the connection comes in parts (DB_*),
+    because the password comes from Secrets Manager and may contain characters that would break a
+    postgresql:// URL. make_conninfo turns the parts into a libpq "key=value" string with safe quoting."""
+    url = env.get("DATABASE_URL", "").strip()
+    if url:
+        return url
+    host = env.get("DB_HOST", "").strip()
+    if not host:
+        return DEFAULT_DATABASE_URL
+    name, user = env.get("DB_NAME", "").strip(), env.get("DB_USER", "").strip()
+    password = env.get("DB_PASSWORD", "")  # not stripped: every character belongs to the password
+    if not (name and user and password):
+        raise ValueError("DB_HOST needs DB_NAME, DB_USER and DB_PASSWORD.")
+    parts = {"host": host, "port": env.get("DB_PORT", "").strip() or "5432",
+             "dbname": name, "user": user, "password": password}
+    sslmode = env.get("DB_SSLMODE", "").strip()
+    if sslmode:
+        parts["sslmode"] = sslmode
+    return make_conninfo(**parts)
+
+
 def load_settings(env: Mapping[str, str] | None = None) -> Settings:
     env = os.environ if env is None else env
 
@@ -38,7 +62,7 @@ def load_settings(env: Mapping[str, str] | None = None) -> Settings:
         return env.get(key, default).strip()
 
     return Settings(
-        database_url=get("DATABASE_URL") or DEFAULT_DATABASE_URL,
+        database_url=_database_url(env),
         auth_mode=_choice(get("AUTH_MODE", "cognito"), ("cognito", "dev"), "AUTH_MODE must be cognito or dev"),
         cognito_region=get("COGNITO_REGION"),
         cognito_user_pool_id=get("COGNITO_USER_POOL_ID"),

@@ -4,8 +4,10 @@
 --   python -m app.seed            load it (only when the database has no users yet)
 --   python -m app.seed --reset    DELETE EVERYTHING, then load it again
 --
--- Demo students can be used as logins only in local dev mode (AUTH_MODE=dev), e.g. the token
--- "dev:john.carter@student.uni.ac.th" (John is the admin). With Cognito, register real accounts.
+-- Logging in as a demo student: locally (AUTH_MODE=dev) use a dev token such as
+-- "dev:john.carter@student.uni.ac.th" (John is the admin). In AWS (Cognito), infra/demo-accounts.sh gives
+-- every demo student a Cognito login with the shared demo password, kept in SSM Parameter Store as
+-- /des424-126-g07-teamup/demo-password (Tokyo); John is in the Cognito admin group.
 
 INSERT INTO categories (name, created_at) VALUES
   ('Course Project', now() - interval '5 minutes'),

@@ -1,0 +1,201 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  TeamUp (des424-126-g07) network: TeamUp's own VPC across two availability zones. The public subnets
+  hold the load balancer and the containers; the private subnets hold only the database and have no
+  route to the internet. There is no NAT gateway (about $45 a month).
+
+Parameters:
+  Prefix:
+    Type: String
+    Default: des424-126-g07-teamup
+    Description: Start of every name, so it's clear in this shared account what belongs to TeamUp.
+  CloudFrontPrefixListId:
+    Type: String
+    Description: >-
+      ID of the AWS-managed prefix list com.amazonaws.global.cloudfront.origin-facing (CloudFront's
+      addresses). The deploy script looks it up.
+
+Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.70.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true # the database's address is a DNS name
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-vpc" }
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-igw" }
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
+
+  # Public subnets: the load balancer, and the containers (which reach ECR, Cognito and S3 through
+  # their public IPs; their firewall only lets the load balancer in).
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.70.0.0/24
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-public-a" }
+
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.70.1.0/24
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-public-b" }
+
+  # Private subnets: only the database. RDS needs subnets in two availability zones.
+  PrivateSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.70.10.0/24
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-private-a" }
+
+  PrivateSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.70.11.0/24
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-private-b" }
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-public" }
+
+  PublicInternetRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetARouteTable:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetA
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetBRouteTable:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetB
+      RouteTableId: !Ref PublicRouteTable
+
+  # No routes at all: traffic stays inside the VPC.
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-private" }
+
+  PrivateSubnetARouteTable:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetA
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnetBRouteTable:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetB
+      RouteTableId: !Ref PrivateRouteTable
+
+  # Firewall rules: each group lets in exactly one kind of traffic.
+  AlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: TeamUp load balancer - HTTP from CloudFront only
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourcePrefixListId: !Ref CloudFrontPrefixListId
+          Description: CloudFront origin-facing addresses
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-alb" }
+
+  BackendSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: TeamUp backend containers - port 8000 from the load balancer only
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8000
+          ToPort: 8000
+          SourceSecurityGroupId: !Ref AlbSecurityGroup
+          Description: TeamUp load balancer
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-backend" }
+
+  FrontendSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: TeamUp website containers - port 80 from the load balancer only
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !Ref AlbSecurityGroup
+          Description: TeamUp load balancer
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-frontend" }
+
+  DatabaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: TeamUp database - PostgreSQL from the backend containers only
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref BackendSecurityGroup
+          Description: TeamUp backend containers
+      Tags:
+        - { Key: Name, Value: !Sub "${Prefix}-database" }
+
+Outputs:
+  VpcId:
+    Value: !Ref Vpc
+  PublicSubnetIds:
+    Description: Load balancer and containers (comma-separated)
+    Value: !Join [",", [!Ref PublicSubnetA, !Ref PublicSubnetB]]
+  PrivateSubnetIds:
+    Description: Database only (comma-separated)
+    Value: !Join [",", [!Ref PrivateSubnetA, !Ref PrivateSubnetB]]
+  AlbSecurityGroupId:
+    Value: !Ref AlbSecurityGroup
+  BackendSecurityGroupId:
+    Value: !Ref BackendSecurityGroup
+  FrontendSecurityGroupId:
+    Value: !Ref FrontendSecurityGroup
+  DatabaseSecurityGroupId:
+    Value: !Ref DatabaseSecurityGroup

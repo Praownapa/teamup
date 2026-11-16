@@ -56,7 +56,11 @@ def presign(body: PresignIn, user: dict = Depends(current_user)):
         raise HTTPException(400, "Only PNG, JPG or WebP images are allowed.")
     key = f"covers/{user['id']}/{uuid.uuid4().hex}.{ext}"
     if settings.upload_mode == "s3":
-        s3 = boto3.client("s3", region_name=settings.s3_region, config=Config(signature_version="s3v4"))
+        # The regional host (<bucket>.s3.<region>.amazonaws.com): boto3's default global host redirects
+        # for up to a day after a bucket is created, and browsers refuse redirects on CORS uploads.
+        s3 = boto3.client("s3", region_name=settings.s3_region,
+                          endpoint_url=f"https://s3.{settings.s3_region}.amazonaws.com",
+                          config=Config(signature_version="s3v4", s3={"addressing_style": "virtual"}))
         upload_url = s3.generate_presigned_url(
             "put_object", Params={"Bucket": settings.s3_bucket, "Key": key, "ContentType": content_type},
             ExpiresIn=LINK_SECONDS)

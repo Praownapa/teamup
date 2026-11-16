@@ -39,3 +39,6 @@ def test_off_and_s3_modes(api, monkeypatch):
     r = api("u@x.test").post("/uploads/presign", json=PNG).json()
     assert "teamup-test" in r["upload_url"] and "X-Amz-Signature=" in r["upload_url"]
     assert r["file_url"].startswith("https://teamup-test.s3.ap-southeast-1.amazonaws.com/covers/")
+    # Regional host: the global one redirects for up to a day after a bucket is created, and browsers
+    # refuse redirects on CORS uploads.
+    assert r["upload_url"].startswith("https://teamup-test.s3.ap-southeast-1.amazonaws.com/covers/")
