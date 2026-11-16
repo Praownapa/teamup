@@ -98,7 +98,9 @@ Each email follows the student's switches on the Account page.
 
 The emails come from one team inbox, set with `TEAMUP_EMAIL=<address> bash infra/deploy.sh`. Later deploys keep that address. Amazon sends the inbox a verification link, and nothing is sent until someone clicks it.
 
-SES in this account is in its *sandbox*: it delivers only to verified addresses, at most 200 emails a day. So emails for the demo students, whose addresses are made up, go to the team inbox instead, with `[for john.carter@student.uni.ac.th]` in the subject. A real sign-up gets email only if their own address is verified in SES too. If an email doesn't arrive, check the spam folder.
+SES in this account is in its *sandbox*: it delivers only to verified addresses, at most 200 emails a day. So emails for the demo students, whose addresses are made up, go to the team inbox instead, with `[for john.carter@student.uni.ac.th]` in the subject. A real sign-up gets email only if their own address is verified in SES too.
+
+Gmail puts these emails in Spam, because Amazon sends them on behalf of a Gmail address. To move them to the inbox, add a Gmail filter: open one of the emails, choose ⋮ → *Filter messages like this* → *Create filter*, and tick *Never send it to Spam*.
 
 **Commands.** Run these from the repository root in Git Bash, after signing in with `aws login --profile teamup` in PowerShell.
 
