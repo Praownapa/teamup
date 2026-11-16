@@ -26,11 +26,17 @@ def container(t, task_logical_id):
 
 
 def env(c):
-    return {e["Name"]: e["Value"] for e in c.get("Environment", [])}
+    """The container's unconditional environment variables (conditional ones are Fn::If entries)."""
+    return {e["Name"]: e["Value"] for e in c.get("Environment", []) if "Name" in e}
 
 
 def statements(role_props):
-    return [s for policy in role_props.get("Policies", []) for s in policy["PolicyDocument"]["Statement"]]
+    """The statements of a role's unconditional inline policies (conditional ones are Fn::If entries)."""
+    return [s for policy in role_props.get("Policies", []) if "PolicyDocument" in policy
+            for s in policy["PolicyDocument"]["Statement"]]
+
+
+NO_VALUE = {"Ref": "AWS::NoValue"}
 
 
 def test_lint():
@@ -54,6 +60,9 @@ def test_backend_container(t):
         "DB_PORT": {"Ref": "DatabasePort"},
         "DB_NAME": {"Ref": "DatabaseName"},
         "DB_SSLMODE": "require",
+        "EMAIL_MODE": {"Fn::If": ["SendEmail", "ses", "off"]},
+        "EMAIL_REGION": {"Ref": "AWS::Region"},
+        "APP_URL": {"Fn::Sub": "https://${Distribution.DomainName}"},
     }
     assert c["Secrets"] == [
         {"Name": "DB_USER", "ValueFrom": {"Fn::Sub": "${DatabaseSecretArn}:username::"}},
@@ -66,6 +75,37 @@ def test_backend_container(t):
     assert c["Image"] == {"Ref": "BackendImage"}
     assert task["ExecutionRoleArn"] == {"Fn::GetAtt": ["ExecutionRole", "Arn"]}
     assert task["TaskRoleArn"] == {"Fn::GetAtt": ["BackendTaskRole", "Arn"]}
+
+
+def test_email_is_on_only_with_a_team_address(t):
+    p = t["Parameters"]["EmailAddress"]
+    assert p["Type"] == "String" and p["Default"] == ""  # empty: no email, nothing to verify
+    assert t["Conditions"]["SendEmail"] == {"Fn::Not": [{"Fn::Equals": [{"Ref": "EmailAddress"}, ""]}]}
+    c = container(t, "BackendTaskDefinition")
+    assert [e["Fn::If"] for e in c["Environment"] if "Fn::If" in e] == [
+        ["SendEmail", {"Name": "EMAIL_FROM", "Value": {"Ref": "EmailAddress"}}, NO_VALUE],
+        ["SendEmail", {"Name": "EMAIL_DEMO_INBOX", "Value": {"Ref": "EmailAddress"}}, NO_VALUE],
+    ]
+
+
+def test_email_identity(t):
+    (identity,) = resources(t, "AWS::SES::EmailIdentity").values()
+    assert identity["Condition"] == "SendEmail"
+    assert identity["Properties"] == {"EmailIdentity": {"Ref": "EmailAddress"}}  # SES emails it a verification link
+
+
+def test_backend_may_only_send_email_as_the_team_address(t):
+    task = props(t, "BackendTaskRole")
+    assert [p["Fn::If"] for p in task["Policies"] if "Fn::If" in p] == [["SendEmail", {
+        "PolicyName": "send-email",
+        "PolicyDocument": {"Version": "2012-10-17", "Statement": [{
+            "Effect": "Allow",
+            "Action": "ses:SendEmail",
+            # identity/*: in the SES sandbox the recipient's verified address is checked too.
+            "Resource": {"Fn::Sub": "arn:${AWS::Partition}:ses:${AWS::Region}:${AWS::AccountId}:identity/*"},
+            "Condition": {"StringEquals": {"ses:FromAddress": {"Ref": "EmailAddress"}}},
+        }]},
+    }, NO_VALUE]]
 
 
 def test_frontend_container(t):

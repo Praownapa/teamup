@@ -20,7 +20,7 @@ from pydantic import BaseModel
 from ..auth import current_user
 from ..db import get_conn
 from ..fields import Text
-from ..notify import notify
+from ..notify import notify, transaction
 from ..places import member_ids, open_role_names, take_open_place
 from ..views import get_visible_project, project_view, request_views
 
@@ -53,7 +53,7 @@ def _pending_kind(conn: psycopg.Connection, project_id: int, user_id: int) -> st
 
 # ---------------------------------------------------------------- services (also called directly by tests)
 def create_join_request(conn: psycopg.Connection, user: dict, project_id: int, role: str, message: str) -> None:
-    with conn.transaction():
+    with transaction(conn):  # also sends the notification emails, after the commit
         project = get_visible_project(conn, project_id, user, lock=True)
         if project["owner_id"] == user["id"]:
             raise HTTPException(400, "You own this project.")
@@ -73,11 +73,11 @@ def create_join_request(conn: psycopg.Connection, user: dict, project_id: int, r
             "INSERT INTO requests (project_id, user_id, kind, role, message) VALUES (%s, %s, 'request', %s, %s) RETURNING id",
             (project_id, user["id"], role, message)).fetchone()["id"]
         notify(conn, project["owner_id"], "request", f"{user['name']} requested to join {project['title']} as {role}.",
-               request_id)
+               request_id, email="requests", subject=f"New join request for {project['title']}")
 
 
 def create_invitation(conn: psycopg.Connection, owner: dict, project_id: int, invitee_id: int, role: str) -> None:
-    with conn.transaction():
+    with transaction(conn):
         project = get_visible_project(conn, project_id, owner, lock=True)
         if project["owner_id"] != owner["id"]:
             raise HTTPException(403, "Only the project owner can do that.")
@@ -100,11 +100,12 @@ def create_invitation(conn: psycopg.Connection, owner: dict, project_id: int, in
         request_id = conn.execute(
             "INSERT INTO requests (project_id, user_id, by_id, kind, role) VALUES (%s, %s, %s, 'invitation', %s) RETURNING id",
             (project_id, invitee_id, owner["id"], role)).fetchone()["id"]
-        notify(conn, invitee_id, "invite", f"{owner['name']} invited you to join {project['title']} as {role}.", request_id)
+        notify(conn, invitee_id, "invite", f"{owner['name']} invited you to join {project['title']} as {role}.", request_id,
+               email="invitations", subject=f"{owner['name']} invited you to join {project['title']}")
 
 
 def respond_to_request(conn: psycopg.Connection, user: dict, request_id: int, accept: bool) -> None:
-    with conn.transaction():
+    with transaction(conn):
         found = conn.execute("SELECT project_id FROM requests WHERE id = %s", (request_id,)).fetchone()
         if found is None:
             raise HTTPException(404, "Request not found.")
@@ -123,9 +124,11 @@ def respond_to_request(conn: psycopg.Connection, user: dict, request_id: int, ac
         if not accept:
             conn.execute("UPDATE requests SET status = 'rejected', responded_at = now() WHERE id = %s", (request_id,))
             if req["kind"] == "request":
-                notify(conn, req["user_id"], "declined", f"Your request to join {title} was declined.")
+                notify(conn, req["user_id"], "declined", f"Your request to join {title} was declined.",
+                       email="requests", subject=f"Your request to join {title} was declined")
             else:
-                notify(conn, project["owner_id"], "declined", f"{student} declined your invitation to join {title}.")
+                notify(conn, project["owner_id"], "declined", f"{student} declined your invitation to join {title}.",
+                       email="invitations", subject=f"{student} declined your invitation to {title}")
         else:
             members = member_ids(conn, project["id"])
             if req["user_id"] in members:
@@ -135,9 +138,11 @@ def respond_to_request(conn: psycopg.Connection, user: dict, request_id: int, ac
             role = take_open_place(conn, project, req["user_id"], req["role"])
             conn.execute("UPDATE requests SET status = 'accepted', responded_at = now() WHERE id = %s", (request_id,))
             if req["kind"] == "request":
-                notify(conn, req["user_id"], "accepted", f"Your request to join {title} was accepted. Say hi to your new team!")
+                notify(conn, req["user_id"], "accepted", f"Your request to join {title} was accepted. Say hi to your new team!",
+                       email="requests", subject=f"Your request to join {title} was accepted")
             else:
-                notify(conn, project["owner_id"], "team", f"{student} accepted your invitation and joined {title} as {role}.")
+                notify(conn, project["owner_id"], "team", f"{student} accepted your invitation and joined {title} as {role}.",
+                       email="invitations", subject=f"{student} accepted your invitation to {title}")
             for member in members:  # the rest of the team (the owner already knows)
                 if member != project["owner_id"]:
                     notify(conn, member, "team", f"{student} joined {title} as {role}.")
@@ -148,7 +153,8 @@ def respond_to_request(conn: psycopg.Connection, user: dict, request_id: int, ac
                     WHERE project_id = %s AND status = 'pending' RETURNING id, user_id, kind""", (project["id"],)).fetchall()
                 for r in rejected:
                     if r["kind"] == "request":
-                        notify(conn, r["user_id"], "declined", f"Your request to join {title} was declined. The team is now complete.")
+                        notify(conn, r["user_id"], "declined", f"Your request to join {title} was declined. The team is now complete.",
+                               email="requests", subject=f"Your request to join {title} was declined")
                     else:
                         notify(conn, r["user_id"], "declined",
                                f"Your invitation to join {title} was withdrawn because the team is now complete.")

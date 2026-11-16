@@ -44,6 +44,18 @@ Parameters:
     Type: String
   FrontendImage:
     Type: String
+  # From the deploy script (TEAMUP_EMAIL): the team inbox that TeamUp's emails come from
+  EmailAddress:
+    Type: String
+    Default: ""
+    AllowedPattern: '^$|^[^@\s]+@[^@\s]+\.[^@\s]+$'
+    ConstraintDescription: must be an email address, or empty for no email
+    Description: >-
+      The team inbox TeamUp sends its emails from. Emails for the made-up demo addresses go to it too. SES
+      emails it a verification link, and sending works once that link is clicked. Empty means no email.
+
+Conditions:
+  SendEmail: !Not [!Equals [!Ref EmailAddress, ""]]
 
 Resources:
   BackendLogGroup:
@@ -85,7 +97,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub "${Prefix}-backend-task"
-      Description: What the TeamUp backend itself may do - only put cover images into its bucket (presigning)
+      Description: What the TeamUp backend itself may do - put cover images into its bucket (presigning) and send email as the team address
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -100,6 +112,27 @@ Resources:
               - Effect: Allow
                 Action: s3:PutObject
                 Resource: !Sub "${CoversBucketArn}/covers/*"
+        - !If
+          - SendEmail
+          - PolicyName: send-email
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action: ses:SendEmail
+                  # identity/*: in the SES sandbox the recipient's verified address is checked too.
+                  # The condition still allows sending only as the team address.
+                  Resource: !Sub "arn:${AWS::Partition}:ses:${AWS::Region}:${AWS::AccountId}:identity/*"
+                  Condition:
+                    StringEquals:
+                      ses:FromAddress: !Ref EmailAddress
+          - !Ref AWS::NoValue
+
+  EmailIdentity:
+    Type: AWS::SES::EmailIdentity
+    Condition: SendEmail
+    Properties:
+      EmailIdentity: !Ref EmailAddress # SES emails this address a verification link
 
   Cluster:
     Type: AWS::ECS::Cluster
@@ -143,6 +176,11 @@ Resources:
             - { Name: DB_PORT, Value: !Ref DatabasePort }
             - { Name: DB_NAME, Value: !Ref DatabaseName }
             - { Name: DB_SSLMODE, Value: require }
+            - { Name: EMAIL_MODE, Value: !If [SendEmail, ses, "off"] }
+            - { Name: EMAIL_REGION, Value: !Ref AWS::Region }
+            - { Name: APP_URL, Value: !Sub "https://${Distribution.DomainName}" } # for the links in emails
+            - !If [SendEmail, { Name: EMAIL_FROM, Value: !Ref EmailAddress }, !Ref AWS::NoValue]
+            - !If [SendEmail, { Name: EMAIL_DEMO_INBOX, Value: !Ref EmailAddress }, !Ref AWS::NoValue]
           Secrets: # read from Secrets Manager when the container starts
             - Name: DB_USER
               ValueFrom: !Sub "${DatabaseSecretArn}:username::"

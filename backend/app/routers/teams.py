@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from ..auth import current_user
 from ..db import get_conn
 from ..fields import Text
-from ..notify import notify
+from ..notify import notify, transaction
 from ..places import free_place, member_ids
 from ..views import get_visible_project, project_view
 
@@ -54,14 +54,15 @@ def change_member_role(conn: psycopg.Connection, owner: dict, project_id: int, m
 
 
 def remove_member(conn: psycopg.Connection, owner: dict, project_id: int, member_id: int) -> None:
-    with conn.transaction():
+    with transaction(conn):  # also sends the notification email, after the commit
         project = _locked_project_for_owner(conn, owner, project_id)
         if member_id == project["owner_id"]:
             raise HTTPException(400, "The owner can't be removed from their own project.")
         if member_id not in member_ids(conn, project_id):
             raise HTTPException(404, "That student isn't on this team.")
         free_place(conn, project_id, member_id)
-        notify(conn, member_id, "team", f"You were removed from {project['title']}.")
+        notify(conn, member_id, "team", f"You were removed from {project['title']}.",
+               email="team", subject=f"You were removed from {project['title']}")
 
 
 def leave_team(conn: psycopg.Connection, user: dict, project_id: int) -> None:
