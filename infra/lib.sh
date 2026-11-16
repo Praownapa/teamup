@@ -48,6 +48,23 @@ stack_output() {
   printf '%s' "$value"
 }
 
+# The addresses added with infra/verify-email.sh, one per line: SES email identities tagged project=teamup
+# and owner=des424-126-g07 that CloudFormation doesn't manage. The team's sender address belongs to the app
+# stack: it gets the same tags from the stack, plus aws:cloudformation:* ones, and the stack deletes it.
+ses_recipients() {
+  local all address ours
+  all=$(awsr sesv2 list-email-identities \
+    --query 'EmailIdentities[?IdentityType==`EMAIL_ADDRESS`].IdentityName' --output text) || return 1
+  for address in $all; do
+    [ "$address" = "None" ] && continue
+    ours=$(awsr sesv2 list-tags-for-resource --resource-arn "arn:aws:ses:$REGION:$ACCOUNT_ID:identity/$address" \
+      --query "length(Tags[?(Key=='project' && Value=='teamup') || (Key=='owner' && Value=='des424-126-g07')]) == \`2\`
+               && length(Tags[?starts_with(Key, 'aws:cloudformation:')]) == \`0\`" \
+      --output text 2>/dev/null) || ours=False
+    if [ "$ours" = "True" ]; then echo "$address"; fi
+  done
+}
+
 # Stop unless the CLI is signed in as our IAM user (the aws login session lasts a limited time).
 require_login() {
   local arn

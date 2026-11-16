@@ -98,7 +98,7 @@ Each email follows the student's switches on the Account page.
 
 The emails come from one team inbox, set with `TEAMUP_EMAIL=<address> bash infra/deploy.sh`. Later deploys keep that address. Amazon sends the inbox a verification link, and nothing is sent until someone clicks it.
 
-SES in this account is in its *sandbox*: it delivers only to verified addresses, at most 200 emails a day. So emails for the demo students, whose addresses are made up, go to the team inbox instead, with `[for john.carter@student.uni.ac.th]` in the subject. A real sign-up gets email only if their own address is verified in SES too.
+SES in this account is in its *sandbox*: it delivers only to verified addresses, at most 200 emails a day. So emails for the demo students, whose addresses are made up, go to the team inbox instead, with `[for john.carter@student.uni.ac.th]` in the subject. A real sign-up gets email only if their own address is verified too. Add it with `bash infra/verify-email.sh <address>`, and the person clicks the link Amazon emails them within 24 hours.
 
 Gmail puts these emails in Spam, because Amazon sends them on behalf of a Gmail address. To move them to the inbox, add a Gmail filter: open one of the emails, choose ⋮ → *Filter messages like this* → *Create filter*, and tick *Never send it to Spam*.
 
@@ -109,6 +109,7 @@ Gmail puts these emails in Spam, because Amazon sends them on behalf of a Gmail 
 | `bash infra/deploy.sh` | Creates or updates everything: the three stacks, both images (tagged with the git commit) and the demo accounts. Then it runs the smoke test. It needs Docker Desktop and a clean git tree, and it's safe to re-run. To turn email on or change the team inbox, run it as `TEAMUP_EMAIL=<address> bash infra/deploy.sh`. |
 | `bash infra/smoke-test.sh` | 13 live checks of the deployed site (the deploy runs it too). |
 | `bash infra/reset-demo-data.sh --yes` | Deletes all app data online and loads the demo data again, for example before the presentation. Cognito logins stay. |
+| `bash infra/verify-email.sh <address> …` | Lets real users receive email while SES is in its sandbox: Amazon emails each address a verification link to click within 24 hours. Run it without an address to list the addresses and whether they're verified. `delete.sh` removes them. |
 | `bash infra/delete.sh` | A dry run that lists everything that would be deleted. `--really-delete` deletes it all, including the database (no copy is kept). |
 | `infra/.venv/Scripts/python -m pytest infra -q` | Offline checks of the templates' security, cost and naming rules, plus cfn-lint. Set it up once with `python -m venv infra/.venv` and `infra/.venv/Scripts/python -m pip install -r infra/requirements-dev.txt`. |
 
