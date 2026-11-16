@@ -1,0 +1,10 @@
+.venv
+tests
+uploads
+__pycache__
+*.pyc
+.pytest_cache
+.env
+.env.*
+docker-compose.yml
+pgadmin-servers.json

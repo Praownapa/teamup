@@ -1,0 +1,39 @@
+# Local development services: PostgreSQL (the TeamUp database) and pgAdmin (a web UI to browse it).
+#   docker compose up -d db pgadmin     start both
+#   docker compose down                 stop (data is kept in the teamup-db volume)
+#   docker compose down -v              stop AND delete all data
+name: teamup
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: teamup
+      POSTGRES_PASSWORD: teamup
+      POSTGRES_DB: teamup
+    ports:
+      - "5434:5432"
+    volumes:
+      - teamup-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U teamup -d teamup"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  pgadmin:
+    image: dpage/pgadmin4:9
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@teamup.dev
+      PGADMIN_DEFAULT_PASSWORD: teamup
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "5050:80"
+    volumes:
+      - ./pgadmin-servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  teamup-db:

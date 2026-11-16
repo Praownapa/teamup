@@ -8,4 +8,6 @@ export default defineConfig({
     port: 5173,
     proxy: { '/api': 'http://localhost:8000' },
   },
+  // Only the frontend tests (the Python backend in backend/ has its own pytest suite).
+  test: { include: ['tests/**/*.test.js'] },
 });

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import * as cognito from './cognito';
+import { routeGate } from './route-gate';
 import { api } from '../api/endpoints';
 import { ErrorState, Loading } from '../components/ui';
 
@@ -55,12 +56,12 @@ export function displayName(profile, user) {
 }
 
 export function ProtectedRoute({ children, adminOnly = false }) {
-  const { user, profile, profileError, profileLoading, refreshProfile, isAdmin } = useAuth();
+  const { user, profile, profileError, refreshProfile, isAdmin } = useAuth();
   const loc = useLocation();
-  if (user === undefined) return <Loading />;
-  if (!user) return <Navigate to="/login" state={{ from: loc.pathname }} replace />;
-  if (profileError) return <ErrorState error={profileError} onRetry={refreshProfile} />;
-  if (profileLoading || !profile) return <Loading />;
-  if (adminOnly && !isAdmin) return <Navigate to="/" replace />;
+  const gate = routeGate({ user, profile, profileError, adminOnly, isAdmin });
+  if (gate === 'loading') return <Loading />;
+  if (gate === 'login') return <Navigate to="/login" state={{ from: loc.pathname }} replace />;
+  if (gate === 'error') return <ErrorState error={profileError} onRetry={refreshProfile} />;
+  if (gate === 'home') return <Navigate to="/" replace />;
   return children;
 }

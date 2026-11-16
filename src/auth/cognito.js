@@ -9,7 +9,21 @@ import { config } from '../config';
 
 const MOCK_KEY = 'teamup_mock_user';
 
-if (!config.useMock) {
+// Local mode (VITE_AUTH_MODE=local): the real backend runs with AUTH_MODE=dev and accepts "dev:" tokens,
+// so sign-in happens in the browser without Cognito. For development only; never deployed.
+const LOCAL = !config.useMock && config.authMode === 'local';
+const LOCAL_USER = 'teamup_local_user';
+const LOCAL_PROFILES = 'teamup_local_profiles';
+const normEmail = (email) => String(email || '').trim().toLowerCase();
+const localProfiles = () => { try { return JSON.parse(localStorage.getItem(LOCAL_PROFILES) || '{}'); } catch { return {}; } };
+
+// Token the backend's dev mode understands: dev:email=...&name=...&student_id=...&major=...
+export function buildDevToken({ email, name, studentId, major }) {
+  const fields = [['email', email], ['name', name], ['student_id', studentId], ['major', major]].filter(([, v]) => v);
+  return `dev:${new URLSearchParams(fields).toString()}`;
+}
+
+if (!config.useMock && !LOCAL) {
   Amplify.configure({ Auth: { Cognito: {
     userPoolId: config.cognito.userPoolId,
     userPoolClientId: config.cognito.userPoolClientId,
@@ -19,6 +33,7 @@ if (!config.useMock) {
 
 export async function signIn(email, password) {
   if (config.useMock) { localStorage.setItem(MOCK_KEY, email); return { done: true }; }
+  if (LOCAL) { localStorage.setItem(LOCAL_USER, normEmail(email)); return { done: true }; }
   const { isSignedIn, nextStep } = await aSignIn({ username: email, password });
   return { done: isSignedIn, nextStep: nextStep?.signInStep };
 }
@@ -26,6 +41,10 @@ export async function signIn(email, password) {
 // ลงทะเบียน: Cognito ส่งรหัส 6 หลักไปที่อีเมล
 export async function signUp({ email, password, name, studentId, major }) {
   if (config.useMock) return { needsConfirm: true };
+  if (LOCAL) {
+    localStorage.setItem(LOCAL_PROFILES, JSON.stringify({ ...localProfiles(), [normEmail(email)]: { name, studentId, major } }));
+    return { needsConfirm: false };
+  }
   const { nextStep } = await aSignUp({
     username: email, password,
     options: { userAttributes: { email, name, 'custom:student_id': studentId, ...(major ? { 'custom:major': major } : {}) } },
@@ -34,18 +53,24 @@ export async function signUp({ email, password, name, studentId, major }) {
 }
 
 export async function confirmSignUp(email, code) {
-  if (config.useMock) return true;
+  if (config.useMock || LOCAL) return true;
   await aConfirm({ username: email, confirmationCode: code });
   return true;
 }
 
 export async function signOut() {
   if (config.useMock) { localStorage.removeItem(MOCK_KEY); return; }
+  if (LOCAL) { localStorage.removeItem(LOCAL_USER); return; }
   await aSignOut();
 }
 
 export async function currentUser() {
   if (config.useMock) { const e = localStorage.getItem(MOCK_KEY); return e ? { email: e, groups: ['admin'] } : null; }
+  if (LOCAL) {
+    // No Cognito groups here: the admin menu follows the backend profile's role instead.
+    const e = localStorage.getItem(LOCAL_USER);
+    return e ? { email: e, name: localProfiles()[e]?.name || '', groups: [] } : null;
+  }
   try {
     await getCurrentUser();
     const { tokens } = await fetchAuthSession();
@@ -57,24 +82,28 @@ export async function currentUser() {
 // JWT ที่จะแนบไปกับทุก request ถึง FastAPI (Amplify refresh token ให้เองเมื่อหมดอายุ)
 export async function getAccessToken() {
   if (config.useMock) return 'mock-token';
+  if (LOCAL) {
+    const e = localStorage.getItem(LOCAL_USER);
+    return e ? buildDevToken({ email: e, ...localProfiles()[e] }) : null;
+  }
   try { const { tokens } = await fetchAuthSession(); return tokens?.accessToken?.toString() || null; }
   catch { return null; }
 }
 
 export async function resendCode(email) {
-  if (config.useMock) return true;
+  if (config.useMock || LOCAL) return true;
   await aResend({ username: email });
   return true;
 }
 
 // ลืมรหัสผ่าน: Cognito ส่งรหัสไปที่อีเมล แล้วตั้งรหัสใหม่ด้วยรหัสนั้น
 export async function forgotPassword(email) {
-  if (config.useMock) return true;
+  if (config.useMock || LOCAL) return true;
   await aReset({ username: email });
   return true;
 }
 export async function confirmForgotPassword(email, code, newPassword) {
-  if (config.useMock) return true;
+  if (config.useMock || LOCAL) return true;
   await aConfirmReset({ username: email, confirmationCode: code, newPassword });
   return true;
 }
