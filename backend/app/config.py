@@ -24,6 +24,11 @@ class Settings:
     s3_region: str = ""
     public_file_base_url: str = ""
     seed_demo_data: bool = False
+    email_mode: str = "off"         # "off", "log" (print emails to the log) or "ses" (send through Amazon SES)
+    email_from: str = ""            # the sender address; SES only sends from an address that has been verified
+    email_region: str = ""
+    email_demo_inbox: str = ""      # emails for the made-up demo addresses go here (none: they aren't sent)
+    app_url: str = ""               # the site's address, for the links in emails
 
 
 def _choice(value: str, allowed: tuple[str, ...], message: str) -> str:
@@ -73,6 +78,11 @@ def load_settings(env: Mapping[str, str] | None = None) -> Settings:
         s3_region=get("S3_REGION"),
         public_file_base_url=get("PUBLIC_FILE_BASE_URL"),
         seed_demo_data=get("SEED_DEMO_DATA").lower() in ("true", "1", "yes"),
+        email_mode=_choice(get("EMAIL_MODE", "off"), ("off", "log", "ses"), "EMAIL_MODE must be off, log or ses"),
+        email_from=get("EMAIL_FROM"),
+        email_region=get("EMAIL_REGION"),
+        email_demo_inbox=get("EMAIL_DEMO_INBOX"),
+        app_url=get("APP_URL").rstrip("/"),
     )
 
 
@@ -84,6 +94,8 @@ def check_settings(settings: Settings) -> list[str]:
         problems.append("AUTH_MODE=cognito needs COGNITO_REGION, COGNITO_USER_POOL_ID and COGNITO_CLIENT_ID.")
     if settings.upload_mode == "s3" and not (settings.s3_bucket and settings.s3_region):
         problems.append("UPLOAD_MODE=s3 needs S3_BUCKET and S3_REGION.")
+    if settings.email_mode == "ses" and not (settings.email_from and settings.email_region):
+        problems.append("EMAIL_MODE=ses needs EMAIL_FROM and EMAIL_REGION.")
     return problems
 
 

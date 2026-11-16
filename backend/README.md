@@ -82,8 +82,12 @@ ORDER BY p.id, r.position;
 | `UPLOAD_DIR` | Folder for local uploads | `uploads` | — |
 | `S3_BUCKET`, `S3_REGION`, `PUBLIC_FILE_BASE_URL` | Where cover images go and how they are read back | — | required for `s3` |
 | `SEED_DEMO_DATA` | Load the demo data at startup if the database is empty | `true` | as wanted |
+| `EMAIL_MODE` | `off`, `log` (print each email to the terminal) or `ses` (send through Amazon SES) | `log` | `ses` once a team address is set |
+| `EMAIL_FROM`, `EMAIL_REGION` | The sender address (verified in SES) and the SES region | — | the team address; Tokyo |
+| `EMAIL_DEMO_INBOX` | Where emails for the made-up demo addresses (`@student.uni.ac.th`) go. Empty: they aren't sent | — | the team address |
+| `APP_URL` | The site's address, for the links in emails | `http://localhost:5173` | the CloudFront address |
 
-If `AUTH_MODE=cognito` or `UPLOAD_MODE=s3` is missing any of its settings, the API refuses to start and logs which variables are missing. Otherwise every login would just be rejected without explanation.
+If `AUTH_MODE=cognito`, `UPLOAD_MODE=s3` or `EMAIL_MODE=ses` is missing any of its settings, the API refuses to start and logs which variables are missing. Otherwise every login would just be rejected without explanation.
 
 ## Tests
 
@@ -134,7 +138,7 @@ Also: `app/routers/notifications.py`, `app/routers/admin.py`, `app/routers/uploa
 
 ## Known limitations
 
-- No email is sent yet (SES). Notifications are in-app only; the email preferences are stored.
+- Only five events send email, following the student's email switches: a join request (to the owner), the owner's answer (to the student), an invitation (to the student), the student's answer (to the owner) and a removal (to the removed member). The rest are in-app only, and the weekly digest isn't built. Emails go out on a background thread after the change is saved (`app/notify.py`, `app/mailer.py`). A failed email is logged, not retried.
 - A presigned S3 upload link can't enforce the 5 MB limit. The browser checks the size, and the local upload mode enforces it.
 - The local upload links are kept in memory: they're lost when the API restarts, and they need a single API process.
 - `AUTH_MODE=dev` must never be used in AWS. Anyone could claim any email.

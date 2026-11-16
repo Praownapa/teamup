@@ -3,8 +3,9 @@
 # nothing.
 #   bash infra/delete.sh                  # dry run
 #   bash infra/delete.sh --really-delete  # delete everything listed, the database too (no copy is kept)
-# It only ever touches TeamUp's own stacks (des424-126-g07-teamup-*), their images and uploaded files, and
-# the demo-password parameter: nothing else in the shared account.
+# It only ever touches TeamUp's own stacks (des424-126-g07-teamup-*), their images and uploaded files, the
+# demo-password parameter and the SES addresses added with infra/verify-email.sh: nothing else in the
+# shared account.
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 cd "$REPO_ROOT"
@@ -42,6 +43,8 @@ if awsr ssm get-parameter --name "$PARAM" >/dev/null 2>&1; then
 else
   echo "SSM parameter $PARAM: (none)"
 fi
+RECIPIENTS="$(ses_recipients | tr '\n' ' ')"
+echo "SES addresses added with infra/verify-email.sh: ${RECIPIENTS:-(none)}"
 
 if [ "${1:-}" != "--really-delete" ]; then
   echo
@@ -62,4 +65,7 @@ for stack in "${STACKS[@]}"; do
   fi
 done
 awsr ssm delete-parameter --name "$PARAM" 2>/dev/null || true
+for address in $RECIPIENTS; do
+  awsr sesv2 delete-email-identity --email-identity "$address"
+done
 echo "Done: TeamUp's AWS setup is deleted."

@@ -2,6 +2,8 @@
 # Create or update TeamUp on AWS (Tokyo) from start to finish. Safe to re-run, also after a failure halfway
 # (for example an expired sign-in): stacks without changes are skipped and existing demo accounts are kept.
 #   bash infra/deploy.sh
+#   TEAMUP_EMAIL=team@example.com bash infra/deploy.sh   # set or change the team inbox emails are sent from
+# Without TEAMUP_EMAIL the address stays what it was (none at first: no email). TEAMUP_EMAIL= turns email off.
 # Needs: "aws login --profile teamup" done in PowerShell, Docker Desktop running, and everything committed
 # (the images are tagged with the commit).
 set -euo pipefail
@@ -43,7 +45,10 @@ ecr_docker push "$BACKEND_IMAGE"
 ecr_docker push "$FRONTEND_IMAGE"
 
 step "5/8 App stack (the first run takes about 10 minutes: CloudFront is slow to create)"
+EMAIL_PARAM=()  # left out, CloudFormation keeps the stack's current address
+if [ -n "${TEAMUP_EMAIL+set}" ]; then EMAIL_PARAM=("EmailAddress=$TEAMUP_EMAIL"); fi
 deploy_stack "$PREFIX-app" infra/templates/app.yaml \
+  ${EMAIL_PARAM[@]+"${EMAIL_PARAM[@]}"} \
   "VpcId=$(net_out VpcId)" \
   "PublicSubnetIds=$(net_out PublicSubnetIds)" \
   "AlbSecurityGroupId=$(net_out AlbSecurityGroupId)" \
@@ -87,3 +92,21 @@ Demo password: $DEMO_PASSWORD   (kept in SSM Parameter Store: /$PREFIX/demo-pass
 In the AWS console: switch the region (top right) to Asia Pacific (Tokyo), then open
 CloudFormation -> Stacks -> $PREFIX-network / $PREFIX-data / $PREFIX-app -> Resources.
 EOF
+EMAIL="$(awsr cloudformation describe-stacks --stack-name "$PREFIX-app" \
+  --query "Stacks[0].Parameters[?ParameterKey=='EmailAddress'].ParameterValue | [0]" --output text)"
+if [ -z "$EMAIL" ] || [ "$EMAIL" = "None" ]; then
+  echo
+  echo "Email: off (no team address). To turn it on: TEAMUP_EMAIL=<team inbox> bash infra/deploy.sh"
+else
+  VERIFIED="$(awsr sesv2 get-email-identity --email-identity "$EMAIL" --query VerificationStatus --output text \
+    2>/dev/null)" || VERIFIED="unknown"
+  PRODUCTION="$(awsr sesv2 get-account --query ProductionAccessEnabled --output text 2>/dev/null)" || PRODUCTION="unknown"
+  echo
+  echo "Email: sent from $EMAIL. SES verification: $VERIFIED"
+  if [ "$VERIFIED" != "SUCCESS" ]; then
+    echo "  Open that inbox and click the link in the email from Amazon Web Services: until then nothing is sent."
+  fi
+  if [ "$PRODUCTION" != "True" ]; then
+    echo "  SES is in its sandbox here: only verified addresses receive email. The demo students' emails go to $EMAIL."
+  fi
+fi

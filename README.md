@@ -73,7 +73,7 @@ Browser
   ├─HTTPS─► CloudFront  https://d2u84idlq1gpr5.cloudfront.net
   │           ├─ /covers/*        ─► S3 bucket (private; readable only through CloudFront)
   │           └─ everything else  ─HTTP─► ALB (public subnets; accepts only our CloudFront)
-  │                                         ├─ /api/*  ─► backend (ECS Fargate, FastAPI :8000) ─► RDS PostgreSQL 17 (private subnets)
+  │                                         ├─ /api/*  ─► backend (ECS Fargate, FastAPI :8000) ─► RDS PostgreSQL 17 (private subnets), SES (email)
   │                                         └─ other   ─► website (ECS Fargate, nginx :80)
   ├─HTTPS─► Cognito user pool (sign-up, sign-in, email codes, tokens)
   └─HTTPS─► S3 presigned PUT (cover upload; the backend hands out the URL)
@@ -83,17 +83,33 @@ Browser
 |---|---|
 | `des424-126-g07-teamup-network` | TeamUp's own VPC: two public subnets (load balancer and containers), two private subnets (the database only, no route to the internet) and the firewall rules. No NAT gateway. |
 | `des424-126-g07-teamup-data` | RDS PostgreSQL 17 with its generated password in Secrets Manager, the cover-image bucket, the Cognito user pool with its `admin` group, and the two image repositories (ECR). A stack policy stops any update from replacing them. |
-| `des424-126-g07-teamup-app` | The ECS cluster with the backend and website services, the load balancer, CloudFront, the IAM roles and the logs. |
+| `des424-126-g07-teamup-app` | The ECS cluster with the backend and website services, the load balancer, CloudFront, the IAM roles, the logs and, when email is on, the team's sender address in SES. |
 
 **Demo logins.** Every demo student in `backend/seed/demo.sql` has a Cognito login, and they all share one password. It's kept in AWS Systems Manager → Parameter Store (Tokyo) → `/des424-126-g07-teamup/demo-password` (click *Show decrypted value*), never in git. `john.carter@student.uni.ac.th` is the admin and `jack.scott@student.uni.ac.th` is suspended. Real sign-ups work too: Cognito emails a code.
+
+**Email.** TeamUp emails students about five events:
+- a join request, to the project owner
+- the owner's answer, to the student
+- an invitation, to the student
+- the student's answer, to the owner
+- a removal from a team, to the removed member
+
+Each email follows the student's switches on the Account page.
+
+The emails come from one team inbox, set with `TEAMUP_EMAIL=<address> bash infra/deploy.sh`. Later deploys keep that address. Amazon sends the inbox a verification link, and nothing is sent until someone clicks it.
+
+SES in this account is in its *sandbox*: it delivers only to verified addresses, at most 200 emails a day. So emails for the demo students, whose addresses are made up, go to the team inbox instead, with `[for john.carter@student.uni.ac.th]` in the subject. A real sign-up gets email only if their own address is verified too. Add it with `bash infra/verify-email.sh <address>`, and the person clicks the link Amazon emails them within 24 hours.
+
+Gmail puts these emails in Spam, because Amazon sends them on behalf of a Gmail address. To move them to the inbox, add a Gmail filter: open one of the emails, choose ⋮ → *Filter messages like this* → *Create filter*, and tick *Never send it to Spam*.
 
 **Commands.** Run these from the repository root in Git Bash, after signing in with `aws login --profile teamup` in PowerShell.
 
 | Command | What it does |
 |---|---|
-| `bash infra/deploy.sh` | Creates or updates everything: the three stacks, both images (tagged with the git commit) and the demo accounts. Then it runs the smoke test. It needs Docker Desktop and a clean git tree, and it's safe to re-run. |
+| `bash infra/deploy.sh` | Creates or updates everything: the three stacks, both images (tagged with the git commit) and the demo accounts. Then it runs the smoke test. It needs Docker Desktop and a clean git tree, and it's safe to re-run. To turn email on or change the team inbox, run it as `TEAMUP_EMAIL=<address> bash infra/deploy.sh`. |
 | `bash infra/smoke-test.sh` | 13 live checks of the deployed site (the deploy runs it too). |
 | `bash infra/reset-demo-data.sh --yes` | Deletes all app data online and loads the demo data again, for example before the presentation. Cognito logins stay. |
+| `bash infra/verify-email.sh <address> …` | Lets real users receive email while SES is in its sandbox: Amazon emails each address a verification link to click within 24 hours. Run it without an address to list the addresses and whether they're verified. `delete.sh` removes them. |
 | `bash infra/delete.sh` | A dry run that lists everything that would be deleted. `--really-delete` deletes it all, including the database (no copy is kept). |
 | `infra/.venv/Scripts/python -m pytest infra -q` | Offline checks of the templates' security, cost and naming rules, plus cfn-lint. Set it up once with `python -m venv infra/.venv` and `infra/.venv/Scripts/python -m pip install -r infra/requirements-dev.txt`. |
 
@@ -112,13 +128,15 @@ Browser
 - The database accepts connections only from the backend containers and has no route to the internet.
 - The load balancer only answers requests that come through our CloudFront.
 - The deployed website always signs in with Cognito, and the backend runs `AUTH_MODE=cognito`, so dev tokens are rejected.
+- The backend may send email only from the team address.
 - The database and demo passwords are generated, and live only in Secrets Manager and Parameter Store.
 
-**Cost.** About $3 a day while it runs: the load balancer, two small Fargate tasks, the micro database, four public IPv4 addresses and one secret. CloudFront, S3, Cognito and the logs are nearly free at this size. The account's $200/month budget is shared by the whole class, so delete the setup when it's no longer needed.
+**Cost.** About $3 a day while it runs: the load balancer, two small Fargate tasks, the micro database, four public IPv4 addresses and one secret. CloudFront, S3, Cognito, SES and the logs are nearly free at this size. The account's $200/month budget is shared by the whole class, so delete the setup when it's no longer needed.
 
 **Limitations.**
 - The 5 MB cover-image limit is only checked in the browser, because a presigned upload can't enforce it.
-- No email goes out through SES. Notifications are in-app. Cognito's built-in email sends the sign-up and password-reset codes, about 50 a day.
+- Sign-up and password-reset codes come from Cognito's built-in email, about 50 a day. Notification emails come from SES, which is in its sandbox (see **Email** above).
+- A notification email that fails is written to the backend's log and isn't retried later. The in-app notification always arrives.
 
 ## Docker and deployment
 

@@ -20,6 +20,25 @@ def test_rejects_unknown_modes():
             load_settings(env)
 
 
+def test_email_settings():
+    s = load_settings({})
+    assert (s.email_mode, s.email_from, s.email_region, s.email_demo_inbox, s.app_url) == ("off", "", "", "", "")
+    s = load_settings({"EMAIL_MODE": " SES ", "EMAIL_FROM": " team@x.test ", "EMAIL_REGION": "ap-northeast-1",
+                       "EMAIL_DEMO_INBOX": "team@x.test", "APP_URL": "https://site.example/"})
+    assert (s.email_mode, s.email_from, s.email_region, s.email_demo_inbox, s.app_url) == (
+        "ses", "team@x.test", "ap-northeast-1", "team@x.test", "https://site.example")
+    with pytest.raises(ValueError):
+        load_settings({"EMAIL_MODE": "smtp"})
+
+
+def test_check_settings_requires_a_sender_for_ses():
+    from app.config import Settings, check_settings
+    assert check_settings(Settings(auth_mode="dev", email_mode="ses")) == [
+        "EMAIL_MODE=ses needs EMAIL_FROM and EMAIL_REGION."]
+    assert check_settings(Settings(auth_mode="dev", email_mode="ses", email_from="t@x.test", email_region="r")) == []
+    assert check_settings(Settings(auth_mode="dev", email_mode="log")) == []
+
+
 def test_check_settings_requires_cognito_and_s3_details():
     from app.config import Settings, check_settings
     assert check_settings(Settings(auth_mode="dev")) == []

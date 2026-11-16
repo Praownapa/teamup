@@ -31,6 +31,25 @@ Result: **13 of 13 passed.** The test also fails when it should: with an invalid
 - **Deleting (dry run only):** `bash infra/delete.sh` lists the 46 resources in the three TeamUp stacks, the two image repositories, the bucket and the demo-password parameter, and deletes nothing.
 - **Offline tests:** 31 template and script tests pass, including cfn-lint (`infra/.venv/Scripts/python -m pytest infra -q`). The 84 backend tests and 46 frontend tests pass.
 
+## Email notifications (SES), tested 2026-11-16
+
+The backend sends an email for each of the five events in the requirements. The emails come from the team inbox, a Gmail address verified in SES. SES is in its sandbox in this account, so it only delivers to verified addresses. The demo students' addresses are made up, so their emails go to the team inbox, with the intended recipient at the start of the subject: `[for grace.hall@student.uni.ac.th] …`.
+
+The test ran on Grace Hall's demo project, *City Air Quality Viz*, which has one open place.
+
+| # | Event (requirement) | Live test | Email received |
+|---|---|---|---|
+| 1 | A student asks to join → the project owner | Noah asks to join | PASS |
+| 2 | The owner accepts or declines → the student | Grace accepts Noah | PASS |
+| 3 | The owner invites a student → that student | Grace invites Ava | PASS |
+| 4 | The student accepts or declines → the owner | Ava declines | PASS |
+| 5 | The owner removes a member → that member | Grace removes Noah | PASS |
+
+- **Where they land:** all five emails arrived in the team inbox's **Spam** folder. Gmail distrusts them because Amazon sends them on behalf of a Gmail address. A Gmail filter with *Never send it to Spam* moves them to the inbox (see the README, **Email**).
+- **Two emails at the same moment:** when accepting a request fills the team, the other waiting students are declined automatically, and two emails go out together. This is what happens when John accepts a request in the demo. In a second live test, Noah and Ava both asked to join and Grace accepted Noah. The backend logged no failed email for either of the two.
+- **The project afterwards:** both tests left Grace's project as it was, with Grace and Ryan on the team and the Data Analyst place open.
+- **Offline tests:** 18 new backend tests (102 in total) and 3 new template tests (34 in total). They cover each event, the email switches on the Account page, the demo inbox, and that a change that's rolled back emails nobody.
+
 ## Manual checklist for the team
 
 Use https://d2u84idlq1gpr5.cloudfront.net. The demo password is in Parameter Store (see the README, "Deployed on AWS"). Before the presentation, run `bash infra/reset-demo-data.sh --yes` if testing used up the demo's join requests and invitations.
@@ -48,3 +67,4 @@ Use https://d2u84idlq1gpr5.cloudfront.net. The demo password is in Parameter Sto
 | 9 | As John, open the Admin page | The overview and the reports show | | |
 | 10 | Sign in as `jack.scott@student.uni.ac.th` | "Your account has been suspended." | | |
 | 11 | Open a deep link such as `/projects/1` directly, then refresh | The page loads (no 404) | | |
+| 12 | After items 4 and 5, open the team inbox (check Spam too) | An email from TeamUp for each, with `[for …@student.uni.ac.th]` in the subject | | |
